@@ -1,5 +1,5 @@
 #include <iostream>
-#include "Controller.cpp"
+#include "gameController.cpp"
 
 int main(void){
 
@@ -31,10 +31,10 @@ int main(void){
 
     // return 0;
 
-    Game game=Game();
-    game.makeRoom();
-    game.control("{\"Header\": 0,\"roomId\": 100}");
-    game.control("{\"Header\": 0,\"roomId\": 10}");
-    game.control("{\"Header\": 1,\"roomId\":100,\"name\": \"youngman\"}");
+    GameController game=GameController();
+    game.example("{\"Header\": 0,\"roomId\": 100}");
+    game.example("{\"Header\": 1,\"roomId\":100,\"name\": \"youngman\"}");
+    game.example("{\"Header\": 2,\"id\":10039,\"colorId\": 4}");
+    game.example("{\"Header\": 5,\"id\":10039}");
     return 0;
 }

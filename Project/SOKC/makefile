@@ -8,3 +8,8 @@ controller:
 all : 
 	g++ -o tests testController.cpp -ljsoncpp
 	./tests
+
+	rm -rf tests
+
+clear:
+	

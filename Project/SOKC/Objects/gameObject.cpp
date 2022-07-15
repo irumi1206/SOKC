@@ -3,15 +3,15 @@
 #include <vector>
 #include <algorithm>
 #include <cstdlib>
-#include "jsonparser/jsonparser.cpp"
+#include "gameStateObject.cpp"
+#include "/home/ubuntu/GameProject/Project/SOKC/jsonparser/jsonparser.cpp"
 
 class Game{
 public: 
     int id;
     std::vector<Player> playerList;
     Player host;
-    int aliveCount;
-    int deadCount;
+    State gameState;
 public:
     Game(){
         this->id=100;
@@ -59,6 +59,18 @@ public:
         playerList.push_back(Player(id,name));
         
         return id;
+    }
+    int joinPlayer(int id,std::string name){
+        int result=1;
+        std::for_each(playerList.begin(), playerList.end(), [&](Player& player){
+            if(player.getId()==id){
+                result=0;
+            }
+        });
+        if(result){
+            playerList.push_back(Player(id,name));
+        }
+        return result;
     }
     int joinPlayer(Player playerIn){
         int tempId=playerIn.getId();

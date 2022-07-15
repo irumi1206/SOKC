@@ -1,67 +1,65 @@
 #include <iostream>
-#include "roomObject.cpp"
+#include "playerObject.cpp"
+#include <gtest/gtest.h>
+#include <tuple>
+#include <vector>
 
 using namespace std;
-
-int main(void){
-    cout<<"-----score test-----"<<endl;
+TEST(score_test,add_kill_score){
     Player player=Player(3,"YM");
-    cout<<player.getKillScore()<<endl;
+    EXPECT_EQ(player.getKillScore(),0);
     player.addKillScore(1);
-    cout<<player.getKillScore()<<endl;
-    cout<<player.getName()<<endl;
+    EXPECT_EQ(player.getKillScore(),1);
+}
+
+TEST(score_test,add_voting_score){
+    Player player=Player(3,"YM");
     player.addVotingAc(1);
-    cout<<player.votingAccuracy()<<endl;
+    EXPECT_EQ(player.votingAccuracy(),1);
     player.addVotingAc(1);
     player.addVotingMi(2);
-    cout<<player.votingAccuracy()<<endl;
-    cout<<"-----position test-----"<<endl;
+    EXPECT_EQ(player.votingAccuracy(),0.5);
+}
+
+TEST(player_info_test,get_name){
+    Player player=Player(3,"YM");
+    EXPECT_EQ(player.getName(),"YM");
+}
+TEST(player_info_test,isDie){
+    Player player=Player(3,"YM");
+    EXPECT_EQ(player.isDie(),false);
+    player.dead();
+    EXPECT_EQ(player.isDie(),true);
+    player.live();
+    EXPECT_EQ(player.isDie(),false);
+}
+
+TEST(position_test,position){
+    Player player=Player(3,"YM");
     player.setPosition(3.5,6.2);
-    tuple<float,float> temp=player.getPosition();
-    cout<<get<0>(temp)<<endl;
-    cout<<get<1>(temp)<<endl;
-    cout<<"-----mission test-----"<<endl;
+    tuple<float,float> temp=make_tuple(3.5,6.2);
+    EXPECT_EQ(player.getPosition(),temp);
+}
+
+TEST(mission_test,add_mission){
+    Player player=Player(3,"YM");
     player.addMission(3);
     player.addMission(4);
-    cout<<"count\t"<<player.countMission()<<endl;
-    vector<int> temp1=player.getMission();
-    for_each(temp1.begin(),temp1.end(),[&](int& n){
-        cout<<n<<endl;
-    });
+    EXPECT_EQ(player.countMission(),2);
+    vector<int> temp1={3,4};
+    EXPECT_EQ(player.getMission(),temp1);
     player.finishMission(3);
-    cout<<"count\t"<<player.countMission()<<endl;
+    EXPECT_EQ(player.countMission(),1);
+    vector<int> temp2={4};
+    EXPECT_EQ(player.getMission(),temp2);
     player.addMission(5);
-    cout<<"count\t"<<player.countMission()<<endl;
+    EXPECT_EQ(player.countMission(),2);
     player.clearMission();
-    cout<<"count\t"<<player.countMission()<<endl;
     player.assignMission(3);
-    vector<int> temp2=player.getMission();
-    for_each(temp2.begin(),temp2.end(),[&](int& n){
-        cout<<n<<" ";
-    });
-    cout<<endl;
-    cout<<"-----player test-----"<<endl;
-    cout<<"isDie: "<<player.isDie()<<endl;
-    player.dead();
-    cout<<"isDie: "<<player.isDie()<<endl;
-    player.live();
-    cout<<"isDie: "<<player.isDie()<<endl;
-    cout<<"-----roomTest-----"<<endl;
-    Room room=Room();
-    cout<<room.joinPlayer(5,"MY")<<" ";
-    cout<<room.joinPlayer(5,"MY")<<" ";
-    cout<<room.countPlayers()<<endl;
-    cout<<"-"<<endl;
-    cout<<room.joinPlayer(player)<<" ";
-    cout<<room.countPlayers()<<endl;
-    cout<<"-"<<endl;
-    cout<<room.joinPlayer(player)<<" ";
-    cout<<room.countPlayers()<<endl;
-    cout<<"-"<<endl;
-    cout<<room.findPlayer(3).getId()<<endl;
-    cout<<room.findPlayer(4).getId()<<endl;
-    cout<<get<0>(room.findPlayer(3).getPosition())<<endl;
-    room.findPlayer(3).setPosition(3.2,2.4);
-    tuple<float,float> temp3=room.findPlayer(3).getPosition();
-    cout<<get<0>(temp3)<<endl;
+    EXPECT_EQ(player.countMission(),3);
+}
+
+int main(int argc, char **argv){
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }

@@ -1,15 +1,7 @@
+GTEST_DIR=googletest/googletest
 
-
-
-controller:
-	g++ -o tests Controller.cpp
-	./tests
-
-all : 
-	g++ -o tests testController.cpp -ljsoncpp
+test:
+	g++ -o tests testController.cpp -isystem ${GTEST_DIR}/include -L${GTEST_DIR}/build -pthread -lgtest -ljsoncpp
 	./tests
 
 	rm -rf tests
-
-clear:
-	

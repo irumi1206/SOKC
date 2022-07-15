@@ -8,7 +8,6 @@ public:
     float y;
     SerializableVector3(float x=0, float y=0)
     {
-        std::cout<<"Making new position"<<std::endl;
         this->x=x;
         this->y=y;
     }

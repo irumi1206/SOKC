@@ -36,17 +36,6 @@ TEST(room_test, count_player){
 }
 
 
-// int main(void){
-//     cout<<"-----roomTest-----"<<endl;
-//     cout<<"-"<<endl;
-//     cout<<room.findPlayer(3).getId()<<endl;
-//     cout<<room.findPlayer(4).getId()<<endl;
-//     cout<<get<0>(room.findPlayer(3).getPosition())<<endl;
-//     room.findPlayer(3).setPosition(3.2,2.4);
-//     tuple<float,float> temp3=room.findPlayer(3).getPosition();
-//     cout<<get<0>(temp3)<<endl;
-// }
-
 int main(int argc, char **argv){
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

@@ -4,7 +4,6 @@
 #include <algorithm>
 #include <cstdlib>
 #include "gameStateObject.cpp"
-#include "/home/ubuntu/GameProject/Project/SOKC/jsonparser/jsonparser.cpp"
 
 class Game{
 public: 

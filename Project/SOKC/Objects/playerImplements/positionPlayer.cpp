@@ -1,6 +1,7 @@
 #include <iostream>
 #include <tuple>
 
+//플레이어의 위치 정보를 저장하는 클래스
 class SerializableVector3
 {
 public:

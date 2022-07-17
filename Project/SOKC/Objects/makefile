@@ -1,12 +1,24 @@
 GTEST_DIR=googletest/googletest
 
 player:
-	g++ -o tests testPlayer.cpp -isystem ${GTEST_DIR}/include -L${GTEST_DIR}/build -pthread -lgtest -ljsoncpp
-	./tests
+	g++ -o testPlayer testPlayer.cpp -isystem ${GTEST_DIR}/include -L${GTEST_DIR}/build -pthread -lgtest -ljsoncpp
 
-	rm -rf tests
 game:
-	g++ -o tests testGame.cpp -isystem ${GTEST_DIR}/include -L${GTEST_DIR}/build -pthread -lgtest -ljsoncpp
-	./tests
+	g++ -o testGame testGame.cpp -isystem ${GTEST_DIR}/include -L${GTEST_DIR}/build -pthread -lgtest -ljsoncpp
 
-	rm -rf tests
+go:
+	./testGame
+	./testPlayer
+	
+cleanGame:
+	rm -rf testGame
+	
+cleanPlayer:
+	rm -rf testPlayer
+
+all:
+	make player
+	make game
+	make go
+	make cleanGame
+	make cleanPlayer

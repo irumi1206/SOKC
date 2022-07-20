@@ -9,8 +9,6 @@ int main(int argc, char const* argv[])
 {
     int sock = 0, valread, client_fd;
     struct sockaddr_in serv_addr;
-    char inp[1024]={0};
-    char buffer[1024] = { 0 };
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         printf("\n Socket creation error \n");
         return -1;
@@ -36,6 +34,8 @@ int main(int argc, char const* argv[])
         return -1;
     }
     while(1){
+        char inp[1024]={0};
+        char8_t buffer[1024] = { 0 };
         std::cin.getline(inp, 1024);
         send(sock, inp, strlen(inp), 0);
         valread = read(sock, buffer, 1024);

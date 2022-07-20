@@ -8,8 +8,8 @@ class tcpConnection{
     public :
         tcpConnection();
         void setTcpSocket(int socketDescriptor);
-        void in(char* buffer,int len);
-        void out(char* message);
+        void in(char8_t* buffer,int len);
+        void out(char8_t* message);
 };
 
 #endif

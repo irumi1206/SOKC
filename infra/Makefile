@@ -1,17 +1,17 @@
 tcpServer : tcpServer.o tcpService.o tcpConnectionSocket.o tcpConnection.o
-	g++ tcpServer.o tcpService.o tcpConnectionSocket.o tcpConnection.o -o tcpServer
+	g++  -std=c++2a tcpServer.o tcpService.o tcpConnectionSocket.o tcpConnection.o -lpthread -o tcpServer
 
 tcpServer.o : tcpServer.cpp tcpService.h tcpConnectionSocket.h tcpConnection.h
-	g++ -c tcpServer.cpp
+	g++ -std=c++2a -c tcpServer.cpp
 
 tcpService.o : tcpService.cpp tcpService.h tcpConnectionSocket.h tcpConnection.h
-	g++ -c tcpService.cpp
+	g++ -std=c++2a -c tcpService.cpp
 
 tcpConnectionSocket.o : tcpConnectionSocket.cpp tcpConnectionSocket.h tcpConnection.h
-	g++ -c tcpConnectionSocket.cpp
+	g++ -std=c++2a -c tcpConnectionSocket.cpp
 
 tcpConnection.o : tcpConnection.cpp tcpConnection.h
-	g++ -c tcpConnection.cpp
+	g++ -std=c++2a -c tcpConnection.cpp
 
 udpServer : udpServer.o udpService.o udpConnection.o
 	g++ udpServer.o udpService.o udpSocket.o -o udpServer
@@ -26,7 +26,7 @@ udpConnection.o : udpConnection.cpp udpConnection.h
 	g++ -c udpConnection.cpp
 
 tcpClient : tcpClient.cpp
-	g++ tcpClient.cpp -o tcpClient
+	g++ -std=c++2a tcpClient.cpp -o tcpClient
 
 udpClient : udpClient.cpp
 	g++ udpClient.cpp -o udpClient

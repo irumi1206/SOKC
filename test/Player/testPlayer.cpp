@@ -1,5 +1,5 @@
 #include <iostream>
-#include "/home/ubuntu/GameProject/Project/SOKC/Player/playerObject.cpp"
+#include "/home/ubuntu/GameProject/SOKC/Player/Player.h"
 #include <gtest/gtest.h>
 #include <tuple>
 #include <vector>

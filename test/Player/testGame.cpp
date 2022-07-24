@@ -1,5 +1,5 @@
 #include <iostream>
-#include "/home/ubuntu/GameProject/Project/SOKC/Player/playerRepository.cpp"
+#include "/home/ubuntu/GameProject/SOKC/Player/Game.h"
 #include <gtest/gtest.h>
 
 using namespace std;

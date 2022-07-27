@@ -158,9 +158,38 @@ TEST(HEADER_31,kill_check){
     toOne["Content"]["id"]=id1;
     out["toOne"]=toOne;
     out["toAll"]=toAll;
+    controller.game.findPlayer(id1).setRole(25);
+    controller.game.findPlayer(id2).setRole(2);
+    controller.game.findPlayer(id3).setRole(25);
     EXPECT_EQ(controller.control("{\"Header\":31,\"Content\":{\"id\":"+to_string(id1)+",\"victim\":"+to_string(id2)+"}}"),out);
     EXPECT_EQ(controller.game.findPlayer(id2).isDie(),true);
     EXPECT_EQ(controller.game.findPlayer(id1).getKillScore(),1);
+
+    toAll["Header"]=31;
+    toOne["Header"]=31;
+    toAll["Content"];
+    toOne["Content"];
+    toAll["Content"]["id"]=id3;
+    toOne["Content"]["id"]=id2;
+    out["toOne"]=toOne;
+    out["toAll"]=toAll;
+    controller.game.findPlayer(id2).live();
+    EXPECT_EQ(controller.control("{\"Header\":31,\"Content\":{\"id\":"+to_string(id2)+",\"victim\":"+to_string(id3)+"}}"),out);
+    EXPECT_EQ(controller.game.findPlayer(id3).isDie(),true);
+    EXPECT_EQ(controller.game.findPlayer(id2).getKillScore(),1);
+
+    toAll["Header"]=31;
+    toOne["Header"]=31;
+    toAll["Content"];
+    toOne["Content"];
+    toAll["Content"]["id"]=id1;
+    toOne["Content"]["id"]=id3;
+    out["toOne"]=toOne;
+    out["toAll"]=toAll;
+    controller.game.findPlayer(id3).live();
+    EXPECT_EQ(controller.control("{\"Header\":31,\"Content\":{\"id\":"+to_string(id3)+",\"victim\":"+to_string(id1)+"}}"),out);
+    EXPECT_EQ(controller.game.findPlayer(id1).isDie(),true);
+    EXPECT_EQ(controller.game.findPlayer(id3).getKillScore(),-1);
 }
 
 TEST(HEADER_32,mission_check){

@@ -76,8 +76,14 @@ Controller::Controller(){
             {
                 int id=data["id"].asInt();
                 int victim=data["victim"].asInt();
-                game.findPlayer(victim).dead();
-                game.findPlayer(id).addKillScore(1);
+                Player& victimPlayer=game.findPlayer(victim);
+                Player& killerPlayer=game.findPlayer(id);
+                victimPlayer.dead();
+                if(victimPlayer.getTeam()==killerPlayer.getTeam()){
+                    killerPlayer.addKillScore(-1);
+                }else{
+                    killerPlayer.addKillScore(1);
+                }
                 Json::Value toOne;
                 Json::Value toAll;
                 toOne["Content"];

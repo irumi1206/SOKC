@@ -2,6 +2,7 @@
 #include <vector>
 #include <algorithm>
 #include <cstdlib>
+#include <ctime>
 #include "Game.h"
 
 //생성자, id는 임시적으로 100할당
@@ -88,4 +89,53 @@ int Game::countPlayers(){
 //플레이어 리스트를 벡터로 받아오는 함수
 std::vector<Player> Game::getPlayers(){
     return playerList;
+}
+
+void Game::assignRole(int molgo, int mid){
+
+    int playercount=countPlayers();
+    int poolc=playercount-molgo-mid;
+    std::vector<int> poolcAbility={1,2,3,4,5,6,7,8,9,10};
+    std::vector<int> molgoAbility={20,21,22,23,24,25,26,27};
+    std::vector<int> midAbility={40,41,42,43,44,45};
+    srand(time(NULL));
+    int i=0;
+    while(playercount){
+        int temp=rand()%playercount;
+        int temp2;
+        if(temp<poolc){
+            int poolcAbilitySize=poolcAbility.size();
+            temp2=rand()%poolcAbilitySize;
+            playerList[i].setRole(poolcAbility[temp2]);
+            poolcAbility.erase(poolcAbility.begin()+temp2);
+            poolcList.push_back(playerList[i].getId());
+            poolc-=1;
+        }else if(temp<poolc+molgo){
+            int molgoAbilitySize=molgoAbility.size();
+            temp2=rand()%molgoAbilitySize;
+            playerList[i].setRole(molgoAbility[temp2]);
+            molgoAbility.erase(molgoAbility.begin()+temp2);
+            molgoList.push_back(playerList[i].getId());
+            molgo-=1;
+        }else{
+            int midAbilitySize=midAbility.size();
+            temp2=rand()%midAbilitySize;
+            playerList[i].setRole(midAbility[temp2]);
+            midAbility.erase(midAbility.begin()+temp2);
+            midList.push_back(playerList[i].getId());
+            mid-=1;
+        }
+        playercount-=1;
+        i++;
+    }
+}
+
+std::vector<int> Game::getPoolc(){
+    return poolcList;
+}
+std::vector<int> Game::getMolgo(){
+    return molgoList;
+}
+std::vector<int> Game::getMid(){
+    return midList;
 }

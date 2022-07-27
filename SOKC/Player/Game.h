@@ -10,6 +10,9 @@ public:
     int id;//방 id
     std::vector<Player> playerList;//방에 참여해 있는 플레이어들을 담는 구조체
     Player host;//host인 플레이어
+    std::vector<int> poolcList;
+    std::vector<int> molgoList;
+    std::vector<int> midList;
 public:
     //생성자, id는 임시적으로 100할당
     Game();
@@ -31,5 +34,9 @@ public:
     int countPlayers();
     //플레이어 리스트를 벡터로 받아오는 함수
     std::vector<Player> getPlayers();
+    void assignRole(int molgo, int mid);
+    std::vector<int> getPoolc();
+    std::vector<int> getMolgo();
+    std::vector<int> getMid();
 };
 #endif

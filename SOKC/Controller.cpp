@@ -29,55 +29,63 @@ Controller::Controller(){
             case 1:
             {
                 Json::Value toOne;
-                Json::Value toAll;
                 toOne["Content"];
-                toAll["Content"];
                 toOne["Header"]=1;
-                toAll["Header"]=1;
                 std::string name=data["name"].asString();
-                toOne["Content"]["playerList"]=playerInfo();
                 int id=game.joinPlayer(name);
-                toOne["Content"]["id"]=10003;//id로 바꿔야 함
-                toAll["Content"]["id"]=10003;//id로 바꿔야 함
-                toAll["Content"]["name"]=name;
+                toOne["Content"]["id"]=id;//id로 바꿔야 함
                 out["toOne"]=toOne;
-                out["toAll"]=toAll;
-                return out;
-            }
-            //다른 플레이어 입장 -->제거
-            case 2:
-            {
-                Json::Value toAll;
-                toAll["Header"]=2;
-                toAll["Content"];
-                int id=data["id"].asInt();
-                int colorId=data["colorId"].asInt();
-                game.findPlayer(id).setColor(colorId);
-                toAll["Content"]["id"]=id;
-                toAll["Content"]["colorId"]=colorId;
-                out["toAll"]=toAll;
+
+                Json::Value other;
+                other["Header"]=2;
+                other["Content"];
+                other["Content"]["id"]=id;
+                other["Content"]["name"]=name;
+                out["other"]=other;
+
+                Json::Value other2;
+                other2["Header"]=3;
+                other2["Content"];
+                other2["Content"]["id"]=id;
+                other2["Content"]["colorId"]=game.findPlayer(id).getColor();
+                out["other2"]=other2;
+
                 return out;
             }
             //플레이어 색 변경
             case 3:
             {
-
+                Json::Value other;
+                other["Header"]=3;
+                other["Content"];
+                int id=data["id"].asInt();
+                int colorId=data["colorId"].asInt();
+                game.findPlayer(id).setColor(colorId);
+                other["Content"]["id"]=id;
+                other["Content"]["colorId"]=colorId;
+                out["other"]=other;
+                return out;
             }
             //룸내 플레이어 리스트 받아오기
             case 4:
             {
-
+                Json::Value toOne;
+                toOne["Header"]=4;
+                toOne["Content"];
+                toOne["Content"]["playerList"]=playerInfo();
+                out["toOne"]=toOne;
+                return out;
             }
             //플레이어 퇴장
             case 5:
             {
-                Json::Value toAll;
-                toAll["Header"]=5;
-                toAll["Content"];
+                Json::Value other;
+                other["Header"]=5;
+                other["Content"];
                 int id=data["id"].asInt();
                 game.deletePlayer(id);
-                toAll["Content"]["id"]=id;
-                out["toAll"]=toAll;
+                other["Content"]["id"]=id;
+                out["other"]=other;
                 return out;
             }
             //호스트가 게임 설정
@@ -111,8 +119,8 @@ Controller::Controller(){
                 game.findPlayer(data["id"].asInt()).setPosition(data["x"].asFloat(),data["y"].asFloat());
                 return out;
             }
-            //유저 위치 동기화 -->제거
-            case 31:
+            //킬
+            case 32:
             {
                 int id=data["id"].asInt();
                 int victim=data["victim"].asInt();
@@ -125,30 +133,27 @@ Controller::Controller(){
                     killerPlayer.addKillScore(1);
                 }
                 Json::Value toOne;
-                Json::Value toAll;
+                Json::Value other;
                 toOne["Content"];
-                toAll["Content"];
-                toOne["Header"]=31;
-                toAll["Header"]=31;
+                other["Content"];
+                toOne["Header"]=32;
+                other["Header"]=32;
                 toOne["Content"]["id"]=id;
-                toAll["Content"]["id"]=victim;
+                other["Content"]["id"]=0;//다른 사람들에게는 더미데이터 전달
+                toOne["Content"]["victim"]=victim;
+                other["Content"]["victim"]=victim;
                 out["toOne"]=toOne;
-                out["toAll"]=toAll;
+                out["other"]=other;
                 return out;
             }
-            //킬
-            case 32:
+            //미션 클리어
+            case 33:
             {
                 int id=data["id"].asInt();
                 int missionId=data["missionId"].asInt();
                 game.findPlayer(id).finishMission(missionId);
                 game.findPlayer(id).addMissionScore(1);
                 return out;
-            }
-            //미션 클리어
-            case 33:
-            {
-
             }
             //능력 사용
             case 34:
@@ -158,7 +163,10 @@ Controller::Controller(){
             //게임 종료
             case 100:
             {
-
+                Json::Value toAll;
+                toAll["Header"]=100;
+                out["toAll"]=toAll;
+                return out;
             }
             default:
             {

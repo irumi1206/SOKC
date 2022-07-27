@@ -36,6 +36,40 @@ TEST(room_test, count_player){
 }
 
 
+TEST(role_test,assign_Role){
+    Game game=Game();
+    int id1=game.joinPlayer("player1");
+    int id2=game.joinPlayer("player2");
+    int id3=game.joinPlayer("player3");
+    int id4=game.joinPlayer("player4");
+    int id5=game.joinPlayer("player5");
+    int id6=game.joinPlayer("player6");
+    int id7=game.joinPlayer("player7");
+    int id8=game.joinPlayer("player8");
+    game.assignRole(2,2);
+    vector<Player> list=game.getPlayers();
+    for_each(list.begin(),list.end(),[&](Player& player){
+        cout<<player.getName()<<"("<<player.getId()<<") : "<<player.getRole()<<endl;
+    });
+    vector<int> poolcList=game.getPoolc();
+    vector<int> molgoList=game.getMolgo();
+    vector<int> midList=game.getMid();
+    EXPECT_EQ(poolcList.size(),4);
+    EXPECT_EQ(molgoList.size(),2);
+    EXPECT_EQ(midList.size(),2);
+    for_each(poolcList.begin(),poolcList.end(),[&](int player){
+        cout<<"PoolC : "<<player<<endl;
+    });
+    for_each(molgoList.begin(),molgoList.end(),[&](int player){
+        cout<<"Molgo : "<<player<<endl;
+    });
+    for_each(midList.begin(),midList.end(),[&](int player){
+        cout<<"Mid : "<<player<<endl;
+    });
+
+}
+
+
 int main(int argc, char **argv){
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

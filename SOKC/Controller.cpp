@@ -11,6 +11,7 @@ Controller::Controller(){
         Json::Value out;
         Json::Value data=datas["Content"];
         switch(datas["Header"].asInt()){
+            //룸 입장 가능 여부
             case 0:
             {
                 Json::Value toOne;
@@ -24,6 +25,7 @@ Controller::Controller(){
                 out["toOne"]=toOne;
                 return out;
             }
+            //룸 입장
             case 1:
             {
                 Json::Value toOne;
@@ -41,8 +43,8 @@ Controller::Controller(){
                 out["toOne"]=toOne;
                 out["toAll"]=toAll;
                 return out;
-
             }
+            //다른 플레이어 입장 -->제거
             case 2:
             {
                 Json::Value toAll;
@@ -56,6 +58,17 @@ Controller::Controller(){
                 out["toAll"]=toAll;
                 return out;
             }
+            //플레이어 색 변경
+            case 3:
+            {
+
+            }
+            //룸내 플레이어 리스트 받아오기
+            case 4:
+            {
+
+            }
+            //플레이어 퇴장
             case 5:
             {
                 Json::Value toAll;
@@ -67,11 +80,38 @@ Controller::Controller(){
                 out["toAll"]=toAll;
                 return out;
             }
+            //호스트가 게임 설정
+            case 8:
+            {
+
+            }
+            //게임 설정 가져오기
+            case 9:
+            {
+
+            }
+            //게임 시작
+            case 10:
+            {
+
+            }
+            //투표 소집
+            case 20:
+            {
+
+            }
+            //투표
+            case 21:
+            {
+
+            }
+            //플레이어 이동
             case 30:
             {
                 game.findPlayer(data["id"].asInt()).setPosition(data["x"].asFloat(),data["y"].asFloat());
                 return out;
             }
+            //유저 위치 동기화 -->제거
             case 31:
             {
                 int id=data["id"].asInt();
@@ -96,6 +136,7 @@ Controller::Controller(){
                 out["toAll"]=toAll;
                 return out;
             }
+            //킬
             case 32:
             {
                 int id=data["id"].asInt();
@@ -103,6 +144,21 @@ Controller::Controller(){
                 game.findPlayer(id).finishMission(missionId);
                 game.findPlayer(id).addMissionScore(1);
                 return out;
+            }
+            //미션 클리어
+            case 33:
+            {
+
+            }
+            //능력 사용
+            case 34:
+            {
+
+            }
+            //게임 종료
+            case 100:
+            {
+
             }
             default:
             {

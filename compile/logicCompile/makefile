@@ -80,6 +80,6 @@ clean :
 	rm -rf Position.o
 	rm -rf Role.o
 	rm -rf Score.o
-	rm -rf gameTest
+	rm -rf ControllerTest
 	rm -rf PlayerTest
 	rm -rf GameTest

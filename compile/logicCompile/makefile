@@ -42,12 +42,34 @@ compile :
 	make jsonparser.o
 
 test : mission.o position.o role.o score.o player.o game.o controller.o jsonparser.o
-	g++ $(TEST_PATH)/testController.cpp $(PLAYER) Controller.o JsonParser.o Game.o -o gameTest -ljsoncpp -isystem ${GTEST_DIR}/include -L${GTEST_DIR}/build -pthread -lgtest
-	g++ $(TEST_PATH)/Player/testPlayer.cpp $(PLAYER) -o PlayerTest -ljsoncpp -isystem ${GTEST_DIR}/include -L${GTEST_DIR}/build -pthread -lgtest
-	g++ $(TEST_PATH)/Player/testGame.cpp $(PLAYER) Game.o -o GameTest -ljsoncpp -isystem ${GTEST_DIR}/include -L${GTEST_DIR}/build -pthread -lgtest
-	./gameTest
+	make testController.o
+	make testGame.o
+	make testPlayer.o
+	./ControllerTest
 	./PlayerTest
 	./GameTest
+testController.o : Mission.o Player.o Position.o Role.o Score.o Controller.o JsonParser.o Game.o
+	g++ $(TEST_PATH)/testController.cpp $(PLAYER) Controller.o JsonParser.o Game.o -o ControllerTest -ljsoncpp -isystem ${GTEST_DIR}/include -L${GTEST_DIR}/build -pthread -lgtest
+
+testGame.o : Mission.o Player.o Position.o Role.o Score.o Game.o
+	g++ $(TEST_PATH)/Player/testGame.cpp $(PLAYER) Game.o -o GameTest -ljsoncpp -isystem ${GTEST_DIR}/include -L${GTEST_DIR}/build -pthread -lgtest
+
+testPlayer.o : Mission.o Player.o Position.o Role.o Score.o
+	g++ $(TEST_PATH)/Player/testPlayer.cpp $(PLAYER) -o PlayerTest -ljsoncpp -isystem ${GTEST_DIR}/include -L${GTEST_DIR}/build -pthread -lgtest
+
+testController : Mission.o Player.o Position.o Role.o Score.o Controller.o JsonParser.o Game.o
+	make testController.o
+	./ControllerTest
+
+testGame : Mission.o Player.o Position.o Role.o Score.o Game.o
+	make testGame.o
+	./GameTest
+
+testPlayer : Mission.o Player.o Position.o Role.o Score.o
+	make testPlayer.o
+	./PlayerTest
+
+
 
 clean :
 	rm -rf Controller.o

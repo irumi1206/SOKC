@@ -13,6 +13,8 @@ public:
     std::vector<int> poolcList;
     std::vector<int> molgoList;
     std::vector<int> midList;
+    int molgoCount;
+    int midCount;
 public:
     //생성자, id는 임시적으로 100할당
     Game();
@@ -34,7 +36,11 @@ public:
     int countPlayers();
     //플레이어 리스트를 벡터로 받아오는 함수
     std::vector<Player> getPlayers();
-    void assignRole(int molgo, int mid);
+    void setMolgoCount(int molgo);
+    void setMidCount(int mid);
+    int getMolgoCount();
+    int getMidCount();
+    void assignRole();
     std::vector<int> getPoolc();
     std::vector<int> getMolgo();
     std::vector<int> getMid();

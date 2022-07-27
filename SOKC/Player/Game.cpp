@@ -91,39 +91,40 @@ std::vector<Player> Game::getPlayers(){
     return playerList;
 }
 
-void Game::assignRole(int molgo, int mid){
+void Game::assignRole(){
 
     int playercount=countPlayers();
-    int poolc=playercount-molgo-mid;
+    int poolcCount=playercount-molgoCount-midCount;
     std::vector<int> poolcAbility={1,2,3,4,5,6,7,8,9,10};
     std::vector<int> molgoAbility={20,21,22,23,24,25,26,27};
     std::vector<int> midAbility={40,41,42,43,44,45};
+    
     srand(time(NULL));
     int i=0;
     while(playercount){
         int temp=rand()%playercount;
         int temp2;
-        if(temp<poolc){
+        if(temp<poolcCount){
             int poolcAbilitySize=poolcAbility.size();
             temp2=rand()%poolcAbilitySize;
             playerList[i].setRole(poolcAbility[temp2]);
             poolcAbility.erase(poolcAbility.begin()+temp2);
             poolcList.push_back(playerList[i].getId());
-            poolc-=1;
-        }else if(temp<poolc+molgo){
+            poolcCount-=1;
+        }else if(temp<poolcCount+molgoCount){
             int molgoAbilitySize=molgoAbility.size();
             temp2=rand()%molgoAbilitySize;
             playerList[i].setRole(molgoAbility[temp2]);
             molgoAbility.erase(molgoAbility.begin()+temp2);
             molgoList.push_back(playerList[i].getId());
-            molgo-=1;
+            molgoCount-=1;
         }else{
             int midAbilitySize=midAbility.size();
             temp2=rand()%midAbilitySize;
             playerList[i].setRole(midAbility[temp2]);
             midAbility.erase(midAbility.begin()+temp2);
             midList.push_back(playerList[i].getId());
-            mid-=1;
+            midCount-=1;
         }
         playercount-=1;
         i++;
@@ -138,4 +139,11 @@ std::vector<int> Game::getMolgo(){
 }
 std::vector<int> Game::getMid(){
     return midList;
+}
+
+void Game::setMolgoCount(int molgo){
+    this->molgoCount=molgo;
+}
+void Game::setMidCount(int mid){
+    this->midCount=mid;
 }

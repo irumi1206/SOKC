@@ -46,7 +46,9 @@ TEST(role_test,assign_Role){
     int id6=game.joinPlayer("player6");
     int id7=game.joinPlayer("player7");
     int id8=game.joinPlayer("player8");
-    game.assignRole(2,2);
+    game.setMolgoCount(2);
+    game.setMidCount(2);
+    game.assignRole();
     vector<Player> list=game.getPlayers();
     for_each(list.begin(),list.end(),[&](Player& player){
         cout<<player.getName()<<"("<<player.getId()<<") : "<<player.getRole()<<endl;

@@ -147,6 +147,7 @@ TEST(HEADER_31,kill_check){
     EXPECT_EQ(controller.game.findPlayer(id1).isDie(),false);
     EXPECT_EQ(controller.game.findPlayer(id2).isDie(),false);
     EXPECT_EQ(controller.game.findPlayer(id3).isDie(),false);
+    //different team(molgo kill poolc)
     Json::Value out;
     Json::Value toAll;
     Json::Value toOne;
@@ -164,7 +165,7 @@ TEST(HEADER_31,kill_check){
     EXPECT_EQ(controller.control("{\"Header\":31,\"Content\":{\"id\":"+to_string(id1)+",\"victim\":"+to_string(id2)+"}}"),out);
     EXPECT_EQ(controller.game.findPlayer(id2).isDie(),true);
     EXPECT_EQ(controller.game.findPlayer(id1).getKillScore(),1);
-
+    //different team(poolc kill molgo)
     toAll["Header"]=31;
     toOne["Header"]=31;
     toAll["Content"];
@@ -177,7 +178,7 @@ TEST(HEADER_31,kill_check){
     EXPECT_EQ(controller.control("{\"Header\":31,\"Content\":{\"id\":"+to_string(id2)+",\"victim\":"+to_string(id3)+"}}"),out);
     EXPECT_EQ(controller.game.findPlayer(id3).isDie(),true);
     EXPECT_EQ(controller.game.findPlayer(id2).getKillScore(),1);
-
+    //same team(molgo kill molgo)
     toAll["Header"]=31;
     toOne["Header"]=31;
     toAll["Content"];

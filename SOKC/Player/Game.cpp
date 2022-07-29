@@ -151,6 +151,12 @@ void Game::setMolgoCount(int molgo){
 void Game::setMidCount(int mid){
     this->midCount=mid;
 }
+int Game::getMolgoCount(){
+    return this->molgoCount;
+}
+int Game::getMidCount(){
+    return this->midCount;
+}
 int Game::emptyColor(){
     int result=1;
     int i=0;
@@ -164,4 +170,11 @@ int Game::emptyColor(){
         });
     }
     return i;
+}
+
+void Game::setMissionCount(int missionCount){
+    this->missionCount=missionCount;
+}
+int Game::getMissionCount(){
+    return this->missionCount;
 }

@@ -9,11 +9,13 @@ Controller::Controller(){
     Json::Value Controller::control(std::string in){
         Json::Value data=toJson(in);
         Json::Value out;
+        Json::Value toOne;
+        Json::Value other;
+        Json::Value toAll;
         switch(data["Header"].asInt()){
             //룸 입장 가능 여부
             case 0:
             {
-                Json::Value toOne;
                 toOne["Header"]=0;
                 toOne["Content"]["serverConnect"]=roomCheck(data["Content"]["roomId"].asInt());
                 out["toOne"]=toOne;
@@ -22,14 +24,12 @@ Controller::Controller(){
             //룸 입장
             case 1:
             {
-                Json::Value toOne;
                 toOne["Header"]=1;
                 std::string name=data["Content"]["name"].asString();
                 int id=game.joinPlayer(name);
                 toOne["Content"]["id"]=id;
                 out["toOne"]=toOne;
 
-                Json::Value other;
                 other["Header"]=2;
                 other["Content"]["id"]=id;
                 other["Content"]["name"]=name;
@@ -46,7 +46,6 @@ Controller::Controller(){
             //플레이어 색 변경
             case 3:
             {
-                Json::Value other;
                 other["Header"]=3;
                 int id=data["Content"]["id"].asInt();
                 int colorId=data["Content"]["colorId"].asInt();
@@ -59,7 +58,6 @@ Controller::Controller(){
             //룸내 플레이어 리스트 받아오기
             case 4:
             {
-                Json::Value toOne;
                 toOne["Header"]=4;
                 toOne["Content"]["playerList"]=playerInfo();
                 out["toOne"]=toOne;
@@ -68,7 +66,6 @@ Controller::Controller(){
             //플레이어 퇴장
             case 5:
             {
-                Json::Value other;
                 other["Header"]=5;
                 int id=data["Content"]["id"].asInt();
                 game.deletePlayer(id);
@@ -88,7 +85,6 @@ Controller::Controller(){
                 if(data["Content"]["missionCount"]!=null){
                     game.setMissionCount(data["Content"]["missionCount"].asInt());
                 }
-                Json::Value other;
                 other["Header"]=8;
                 other["Content"]["molgoCount"]=game.getMolgoCount();
                 other["Content"]["ysfbcCount"]=game.getMidCount();
@@ -99,7 +95,6 @@ Controller::Controller(){
             //게임 설정 가져오기
             case 9:
             {
-                Json::Value toOne;
                 toOne["Header"]=9;
                 toOne["Content"]["molgoCount"]=game.getMolgoCount();
                 toOne["Content"]["ysfbcCount"]=game.getMidCount();
@@ -141,8 +136,6 @@ Controller::Controller(){
                 }else{
                     killerPlayer.addKillScore(1);
                 }
-                Json::Value toOne;
-                Json::Value other;
                 toOne["Header"]=32;
                 other["Header"]=32;
                 toOne["Content"]["id"]=id;
@@ -170,7 +163,6 @@ Controller::Controller(){
             //게임 종료
             case 100:
             {
-                Json::Value toAll;
                 toAll["Header"]=100;
                 out["toAll"]=toAll;
                 return out;

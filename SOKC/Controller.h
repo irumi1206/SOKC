@@ -10,7 +10,7 @@ class Controller
 {
 public:
     Game game;
-    Json::Value null;
+    const Json::Value null;
     Controller();
     Json::Value control(std::string in);
     Json::Value positions();

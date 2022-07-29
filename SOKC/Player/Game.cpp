@@ -51,8 +51,12 @@ int Game::joinPlayer(std::string name){
             }
         });
     }
-    playerList.push_back(Player(id,name));
-    
+    Player tempPlayer=Player(id,name);
+    tempPlayer.setColor(emptyColor());
+    if(playerList.size()==0){
+        hostId=id;
+    }
+    playerList.push_back(tempPlayer);
     return id;
 }
 //플레이어 참가, id를 임의적으로 할당할 때 사용
@@ -146,4 +150,18 @@ void Game::setMolgoCount(int molgo){
 }
 void Game::setMidCount(int mid){
     this->midCount=mid;
+}
+int Game::emptyColor(){
+    int result=1;
+    int i=0;
+    while(result==1){
+        result=0;
+        i++;
+        std::for_each(playerList.begin(), playerList.end(), [&](Player& player){
+            if(player.getColor()==i){
+                result=1;
+            }
+        });
+    }
+    return i;
 }

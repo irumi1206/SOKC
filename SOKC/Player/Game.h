@@ -9,7 +9,7 @@ class Game{
 public: 
     int id;//방 id
     std::vector<Player> playerList;//방에 참여해 있는 플레이어들을 담는 구조체
-    Player host;//host인 플레이어
+    int hostId;
     std::vector<int> poolcList;
     std::vector<int> molgoList;
     std::vector<int> midList;
@@ -44,5 +44,6 @@ public:
     std::vector<int> getPoolc();
     std::vector<int> getMolgo();
     std::vector<int> getMid();
+    int emptyColor();
 };
 #endif

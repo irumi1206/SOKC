@@ -58,7 +58,7 @@ TEST(role_test,assign_Role){
     EXPECT_EQ(midList.size(),2);
 }
 
-TEST(color_test,assign_color){
+TEST(color_test,assign_color_auto){
     Game game=Game();
     int id1=game.joinPlayer("player1");
     int id2=game.joinPlayer("player2");
@@ -86,6 +86,22 @@ TEST(host_test,first_player_host){
     EXPECT_EQ(game.hostId,id1);
     game.findPlayer(game.hostId).setColor(10);
     EXPECT_EQ(game.findPlayer(id1).getColor(),10);
+}
+
+TEST(start_game,game_start){
+    Game game=Game();
+    int id1=game.joinPlayer("player1");
+    int id2=game.joinPlayer("player2");
+    int id3=game.joinPlayer("player3");
+    int id4=game.joinPlayer("player4");
+    int id5=game.joinPlayer("player5");
+    int id6=game.joinPlayer("player6");
+    int id7=game.joinPlayer("player7");
+    int id8=game.joinPlayer("player8");
+    game.gameStart();
+    for_each(game.playerList.begin(),game.playerList.end(),[&](Player& player){
+        cout<<player.getId()<<"("<<player.getRole()<<") : "<<player.getMission()[0]<<", "<<player.getMission()[1]<<", "<<player.getMission()[2]<<", "<<player.isDie()<<endl;
+    });
 }
 
 

@@ -7,17 +7,16 @@ Controller::Controller(){
     this->game=Game();
 };
     Json::Value Controller::control(std::string in){
-        Json::Value datas=toJson(in);
+        Json::Value data=toJson(in);
         Json::Value out;
-        Json::Value data=datas["Content"];
-        switch(datas["Header"].asInt()){
+        switch(data["Header"].asInt()){
             //룸 입장 가능 여부
             case 0:
             {
                 Json::Value toOne;
                 toOne["Header"]=0;
                 toOne["Content"];
-                toOne["Content"]["serverConnect"]=roomCheck(data["roomId"].asInt());
+                toOne["Content"]["serverConnect"]=roomCheck(data["Content"]["roomId"].asInt());
                 out["toOne"]=toOne;
                 return out;
             }
@@ -27,7 +26,7 @@ Controller::Controller(){
                 Json::Value toOne;
                 toOne["Content"];
                 toOne["Header"]=1;
-                std::string name=data["name"].asString();
+                std::string name=data["Content"]["name"].asString();
                 int id=game.joinPlayer(name);
                 toOne["Content"]["id"]=id;//id로 바꿔야 함
                 out["toOne"]=toOne;
@@ -54,8 +53,8 @@ Controller::Controller(){
                 Json::Value other;
                 other["Header"]=3;
                 other["Content"];
-                int id=data["id"].asInt();
-                int colorId=data["colorId"].asInt();
+                int id=data["Content"]["id"].asInt();
+                int colorId=data["Content"]["colorId"].asInt();
                 game.findPlayer(id).setColor(colorId);
                 other["Content"]["id"]=id;
                 other["Content"]["colorId"]=colorId;
@@ -78,7 +77,7 @@ Controller::Controller(){
                 Json::Value other;
                 other["Header"]=5;
                 other["Content"];
-                int id=data["id"].asInt();
+                int id=data["Content"]["id"].asInt();
                 game.deletePlayer(id);
                 other["Content"]["id"]=id;
                 out["other"]=other;
@@ -87,7 +86,23 @@ Controller::Controller(){
             //호스트가 게임 설정
             case 8:
             {
-
+                    if(data["Content"]["molgoCount"]!=null){
+                        game.setMolgoCount(data["Content"]["molgoCount"].asInt());
+                    }
+                    if(data["Content"]["ysfbcCount"]!=null){
+                        game.setMidCount(data["Content"]["ysfbcCount"].asInt());
+                    }
+                    if(data["Content"]["missionCount"]!=null){
+                        game.setMissionCount(data["Content"]["missionCount"].asInt());
+                    }
+                    Json::Value other;
+                    other["Header"]=8;
+                    other["Content"];
+                    other["Content"]["molgoCount"]=game.getMolgoCount();
+                    other["Content"]["ysfbcCount"]=game.getMidCount();
+                    other["Content"]["missionCount"]=game.getMissionCount();
+                    out["other"]=other;
+                return out;
             }
             //게임 설정 가져오기
             case 9:
@@ -112,14 +127,14 @@ Controller::Controller(){
             //플레이어 이동
             case 30:
             {
-                game.findPlayer(data["id"].asInt()).setPosition(data["x"].asFloat(),data["y"].asFloat());
+                game.findPlayer(data["Content"]["id"].asInt()).setPosition(data["Content"]["x"].asFloat(),data["Content"]["y"].asFloat());
                 return out;
             }
             //킬
             case 32:
             {
-                int id=data["id"].asInt();
-                int victim=data["victim"].asInt();
+                int id=data["Content"]["id"].asInt();
+                int victim=data["Content"]["victim"].asInt();
                 Player& victimPlayer=game.findPlayer(victim);
                 Player& killerPlayer=game.findPlayer(id);
                 victimPlayer.dead();
@@ -145,8 +160,8 @@ Controller::Controller(){
             //미션 클리어
             case 33:
             {
-                int id=data["id"].asInt();
-                int missionId=data["missionId"].asInt();
+                int id=data["Content"]["id"].asInt();
+                int missionId=data["Content"]["missionId"].asInt();
                 game.findPlayer(id).finishMission(missionId);
                 game.findPlayer(id).addMissionScore(1);
                 return out;

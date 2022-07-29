@@ -4,7 +4,7 @@
 
 using namespace std;
 
-TEST(HEADER_0,room_check){
+TEST(HEADER,0_room_check){
     Controller controller=Controller();
     Json::Value out;
     Json::Value toOne;
@@ -15,7 +15,7 @@ TEST(HEADER_0,room_check){
     EXPECT_EQ(controller.control("{\"Header\":0,\"Content\":{\"roomId\":100}}"),out);
 }
 //룸 입장, 다른 사람들에게 입장한 플레이어 정보(2), 입장한 플레이어 색(3)
-TEST(HEADER_1,room_check){
+TEST(HEADER,1_room_enter){
     Controller controller=Controller();
     Json::Value expect1=controller.control("{\"Header\":1,\"Content\":{\"roomId\":100,\"name\":\"YM\"}}");
     Json::Value out;
@@ -79,7 +79,7 @@ TEST(HEADER_1,room_check){
 //     EXPECT_EQ(controller.control("{\"Header\":1,\"Content\":{\"roomId\":100,\"name\":\"YMK\"}}"),out);
 // }
 
-TEST(HEADER_3,color_change_check){
+TEST(HEADER,3_color_change_info){
     Controller controller=Controller();
     int id=controller.game.joinPlayer("YM");
     Json::Value out;
@@ -93,7 +93,7 @@ TEST(HEADER_3,color_change_check){
     EXPECT_EQ(controller.control(temp),out);
 }
 
-TEST(HEADER_4,room_list_check){
+TEST(HEADER,4_room_list_get){
     Controller controller=Controller();
     int id=controller.game.joinPlayer("YM");
     controller.game.findPlayer(id).setColor(3);
@@ -112,7 +112,7 @@ TEST(HEADER_4,room_list_check){
 }
 
 
-TEST(HEADER_5,exit_check){
+TEST(HEADER,5_exit_info){
     Controller controller=Controller();
     int id=controller.game.joinPlayer("YM");
     Json::Value out;
@@ -127,7 +127,7 @@ TEST(HEADER_5,exit_check){
     EXPECT_EQ(controller.game.countPlayers(),0);
 }
 
-TEST(HEADER_8,host_game_setting){
+TEST(HEADER,8_host_game_setting){
     Controller controller=Controller();
     int id=controller.game.joinPlayer("YM");
     int id1=controller.game.joinPlayer("1");
@@ -144,8 +144,35 @@ TEST(HEADER_8,host_game_setting){
     EXPECT_EQ(controller.control("{\"Header\":8,\"Content\":{\"molgoCount\":1,\"ysfbcCount\":1,\"missionCount\":1}}"),out);
 }
 
+TEST(HEADER,9_get_game_setting){
+    Controller controller=Controller();
+    int id=controller.game.joinPlayer("YM");
+    int id1=controller.game.joinPlayer("1");
+    int id2=controller.game.joinPlayer("2");
+    int id3=controller.game.joinPlayer("3");
+    Json::Value out;
+    Json::Value toOne;
+    toOne["Header"]=9;
+    toOne["Content"];
+    toOne["Content"]["molgoCount"]=1;
+    toOne["Content"]["ysfbcCount"]=1;
+    toOne["Content"]["missionCount"]=1;
+    out["toOne"]=toOne;
+    controller.control("{\"Header\":8,\"Content\":{\"molgoCount\":1,\"ysfbcCount\":1,\"missionCount\":1}}");
+    EXPECT_EQ(controller.control("{\"Header\":9}"),out);
+    toOne["Header"]=9;
+    toOne["Content"];
+    toOne["Content"]["molgoCount"]=2;
+    toOne["Content"]["ysfbcCount"]=2;
+    toOne["Content"]["missionCount"]=2;
+    out["toOne"]=toOne;
+    controller.control("{\"Header\":8,\"Content\":{\"molgoCount\":2,\"ysfbcCount\":2,\"missionCount\":2}}");
+    EXPECT_EQ(controller.control("{\"Header\":9}"),out);
 
-TEST(HEADER_30,moving_check){
+}
+
+
+TEST(HEADER,30_moving_check){
     Controller controller=Controller();
     int id1=controller.game.joinPlayer("YM");
     int id2=controller.game.joinPlayer("SH");
@@ -178,7 +205,7 @@ TEST(HEADER_30,moving_check){
 //     EXPECT_EQ(controller.positions(),out);
 // }
 
-TEST(HEADER_32,kill_check){
+TEST(HEADER,32_kill_check){
     Controller controller=Controller();
     int id1=controller.game.joinPlayer("YM");
     int id2=controller.game.joinPlayer("SH");
@@ -238,7 +265,7 @@ TEST(HEADER_32,kill_check){
     EXPECT_EQ(controller.game.findPlayer(id3).getKillScore(),-1);
 }
 
-TEST(HEADER_33,mission_check){
+TEST(HEADER,33_mission_check){
     Controller controller=Controller();
     int id1=controller.game.joinPlayer("YM");
     int id2=controller.game.joinPlayer("SH");

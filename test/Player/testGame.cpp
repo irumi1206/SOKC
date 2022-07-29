@@ -99,8 +99,11 @@ TEST(start_game,game_start){
     int id7=game.joinPlayer("player7");
     int id8=game.joinPlayer("player8");
     game.gameStart();
+    EXPECT_EQ(game.getMolgo().size(),2);
+    EXPECT_EQ(game.getPoolc().size(),4);
+    EXPECT_EQ(game.getMid().size(),2);
     for_each(game.playerList.begin(),game.playerList.end(),[&](Player& player){
-        cout<<player.getId()<<"("<<player.getRole()<<") : "<<player.getMission()[0]<<", "<<player.getMission()[1]<<", "<<player.getMission()[2]<<", "<<player.isDie()<<endl;
+        EXPECT_EQ(player.getMission().size(),3);
     });
 }
 

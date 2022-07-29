@@ -15,7 +15,6 @@ Controller::Controller(){
             {
                 Json::Value toOne;
                 toOne["Header"]=0;
-                toOne["Content"];
                 toOne["Content"]["serverConnect"]=roomCheck(data["Content"]["roomId"].asInt());
                 out["toOne"]=toOne;
                 return out;
@@ -24,23 +23,20 @@ Controller::Controller(){
             case 1:
             {
                 Json::Value toOne;
-                toOne["Content"];
                 toOne["Header"]=1;
                 std::string name=data["Content"]["name"].asString();
                 int id=game.joinPlayer(name);
-                toOne["Content"]["id"]=id;//id로 바꿔야 함
+                toOne["Content"]["id"]=id;
                 out["toOne"]=toOne;
 
                 Json::Value other;
                 other["Header"]=2;
-                other["Content"];
                 other["Content"]["id"]=id;
                 other["Content"]["name"]=name;
                 out["other"]=other;
 
                 Json::Value other2;
                 other2["Header"]=3;
-                other2["Content"];
                 other2["Content"]["id"]=id;
                 other2["Content"]["colorId"]=game.findPlayer(id).getColor();
                 out["other2"]=other2;
@@ -52,7 +48,6 @@ Controller::Controller(){
             {
                 Json::Value other;
                 other["Header"]=3;
-                other["Content"];
                 int id=data["Content"]["id"].asInt();
                 int colorId=data["Content"]["colorId"].asInt();
                 game.findPlayer(id).setColor(colorId);
@@ -66,7 +61,6 @@ Controller::Controller(){
             {
                 Json::Value toOne;
                 toOne["Header"]=4;
-                toOne["Content"];
                 toOne["Content"]["playerList"]=playerInfo();
                 out["toOne"]=toOne;
                 return out;
@@ -76,7 +70,6 @@ Controller::Controller(){
             {
                 Json::Value other;
                 other["Header"]=5;
-                other["Content"];
                 int id=data["Content"]["id"].asInt();
                 game.deletePlayer(id);
                 other["Content"]["id"]=id;
@@ -97,7 +90,6 @@ Controller::Controller(){
                 }
                 Json::Value other;
                 other["Header"]=8;
-                other["Content"];
                 other["Content"]["molgoCount"]=game.getMolgoCount();
                 other["Content"]["ysfbcCount"]=game.getMidCount();
                 other["Content"]["missionCount"]=game.getMissionCount();
@@ -109,7 +101,6 @@ Controller::Controller(){
             {
                 Json::Value toOne;
                 toOne["Header"]=9;
-                toOne["Content"];
                 toOne["Content"]["molgoCount"]=game.getMolgoCount();
                 toOne["Content"]["ysfbcCount"]=game.getMidCount();
                 toOne["Content"]["missionCount"]=game.getMissionCount();
@@ -152,8 +143,6 @@ Controller::Controller(){
                 }
                 Json::Value toOne;
                 Json::Value other;
-                toOne["Content"];
-                other["Content"];
                 toOne["Header"]=32;
                 other["Header"]=32;
                 toOne["Content"]["id"]=id;
@@ -196,7 +185,6 @@ Controller::Controller(){
         Json::Value out;
         Json::Value toAll;
         toAll["Header"]=30;
-        toAll["Content"];
         int i=0;
         int max=game.countPlayers()-1;
         std::string positions="[";

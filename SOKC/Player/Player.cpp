@@ -122,4 +122,4 @@ int Player::getSOTGScore(){
 //투표정확도 가져오기(float으로 출력)
 float Player::votingAccuracy(){
     return this->score.votingAccuracy();
-    };
+};

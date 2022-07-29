@@ -14,6 +14,7 @@ public:
     Json::Value control(std::string in);
     Json::Value positions();
     std::string playerInfo();
+    int roomCheck(int roomId);
 };
 
 #endif

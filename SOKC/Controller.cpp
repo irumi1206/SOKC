@@ -17,11 +17,7 @@ Controller::Controller(){
                 Json::Value toOne;
                 toOne["Header"]=0;
                 toOne["Content"];
-                if(game.getId()==data["roomId"].asInt() && game.countPlayers()<16){
-                    toOne["Content"]["serverConnect"]=1;
-                }else{
-                    toOne["Content"]["serverConnect"]=-1;
-                }
+                toOne["Content"]["serverConnect"]=roomCheck(data["roomId"].asInt());
                 out["toOne"]=toOne;
                 return out;
             }
@@ -183,15 +179,15 @@ Controller::Controller(){
         int max=game.countPlayers()-1;
         std::string positions="[";
         std::for_each(game.playerList.begin(), game.playerList.end(), [&](Player& player){
-            positions+="(";
+            positions+="{";
             positions+="\"id\":"+std::to_string(player.getId());
             std::tuple<float,float> position=player.getPosition();
             positions+=",\"x\":"+std::to_string(std::get<0>(position));
             positions+=",\"y\":"+std::to_string(std::get<1>(position));
             if(i==max){
-                positions+=")";
+                positions+="}";
             }else{
-                positions+="),";
+                positions+="},";
             }
             i++;
         });
@@ -205,17 +201,25 @@ Controller::Controller(){
         int i=0;
         int max=game.countPlayers()-1;
         std::for_each(game.playerList.begin(),game.playerList.end(),[&](Player& player){
-            players+="(";
+            players+="{";
             players+="\"id\":"+std::to_string(player.getId());
             players+=",\"name\":\""+player.getName()+"\"";
             players+=",\"color\":"+std::to_string(player.getColor());
             if(i==max){
-                players+=")";
+                players+="}";
             }else{
-                players+="),";
+                players+="},";
             }
             i++;
         });
         players+="]";
         return players;
+    }
+    int Controller::roomCheck(int roomId){
+        if(game.getId()==roomId && game.countPlayers()<16){
+            return 1;
+        }
+        else{
+            return -1;
+        }
     }

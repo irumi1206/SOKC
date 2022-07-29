@@ -178,3 +178,11 @@ void Game::setMissionCount(int missionCount){
 int Game::getMissionCount(){
     return this->missionCount;
 }
+
+void Game::gameStart(){
+    assignRole();
+    std::for_each(playerList.begin(),playerList.end(),[&](Player& player){
+        player.live();
+        player.assignMission(missionCount);
+    });
+}

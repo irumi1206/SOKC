@@ -17,6 +17,8 @@ public:
     int midCount=2;
     int missionCount=3;
 public:
+    //게임 시작 함수
+    void gameStart();
     //생성자, id는 임시적으로 100할당
     Game();
 

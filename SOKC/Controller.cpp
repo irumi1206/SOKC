@@ -86,28 +86,35 @@ Controller::Controller(){
             //호스트가 게임 설정
             case 8:
             {
-                    if(data["Content"]["molgoCount"]!=null){
-                        game.setMolgoCount(data["Content"]["molgoCount"].asInt());
-                    }
-                    if(data["Content"]["ysfbcCount"]!=null){
-                        game.setMidCount(data["Content"]["ysfbcCount"].asInt());
-                    }
-                    if(data["Content"]["missionCount"]!=null){
-                        game.setMissionCount(data["Content"]["missionCount"].asInt());
-                    }
-                    Json::Value other;
-                    other["Header"]=8;
-                    other["Content"];
-                    other["Content"]["molgoCount"]=game.getMolgoCount();
-                    other["Content"]["ysfbcCount"]=game.getMidCount();
-                    other["Content"]["missionCount"]=game.getMissionCount();
-                    out["other"]=other;
+                if(data["Content"]["molgoCount"]!=null){
+                    game.setMolgoCount(data["Content"]["molgoCount"].asInt());
+                }
+                if(data["Content"]["ysfbcCount"]!=null){
+                    game.setMidCount(data["Content"]["ysfbcCount"].asInt());
+                }
+                if(data["Content"]["missionCount"]!=null){
+                    game.setMissionCount(data["Content"]["missionCount"].asInt());
+                }
+                Json::Value other;
+                other["Header"]=8;
+                other["Content"];
+                other["Content"]["molgoCount"]=game.getMolgoCount();
+                other["Content"]["ysfbcCount"]=game.getMidCount();
+                other["Content"]["missionCount"]=game.getMissionCount();
+                out["other"]=other;
                 return out;
             }
             //게임 설정 가져오기
             case 9:
             {
-
+                Json::Value toOne;
+                toOne["Header"]=9;
+                toOne["Content"];
+                toOne["Content"]["molgoCount"]=game.getMolgoCount();
+                toOne["Content"]["ysfbcCount"]=game.getMidCount();
+                toOne["Content"]["missionCount"]=game.getMissionCount();
+                out["toOne"]=toOne;
+                return out;
             }
             //게임 시작
             case 10:

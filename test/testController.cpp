@@ -127,6 +127,24 @@ TEST(HEADER_5,exit_check){
     EXPECT_EQ(controller.game.countPlayers(),0);
 }
 
+TEST(HEADER_8,host_game_setting){
+    Controller controller=Controller();
+    int id=controller.game.joinPlayer("YM");
+    int id1=controller.game.joinPlayer("1");
+    int id2=controller.game.joinPlayer("2");
+    int id3=controller.game.joinPlayer("3");
+    Json::Value out;
+    Json::Value other;
+    other["Header"]=8;
+    other["Content"];
+    other["Content"]["molgoCount"]=1;
+    other["Content"]["ysfbcCount"]=1;
+    other["Content"]["missionCount"]=1;
+    out["other"]=other;
+    EXPECT_EQ(controller.control("{\"Header\":8,\"Content\":{\"molgoCount\":1,\"ysfbcCount\":1,\"missionCount\":1}}"),out);
+}
+
+
 TEST(HEADER_30,moving_check){
     Controller controller=Controller();
     int id1=controller.game.joinPlayer("YM");

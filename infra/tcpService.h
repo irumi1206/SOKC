@@ -5,7 +5,7 @@
 #include "tcpConnectionSocket.h"
 #include "tcpConnection.h"
 // //==추가==//
-#include "/home/ubuntu/GameProject/Project/SOKCH/Controller.h"
+#include "/home/ubuntu/GameProject/SOKC/Controller.h"
 // //==여기까지==//
 
 class tcpService{

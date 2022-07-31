@@ -3,7 +3,7 @@
 #include <cstdio>
 #include <string>
 #include <cstring>
-#include "/home/ubuntu/GameProject/Project/SOKCH/Controller.h"
+#include "/home/ubuntu/GameProject/SOKC/Controller.h"
 //#include <jsoncpp/json/json.h>
 
  tcpService::tcpService(){

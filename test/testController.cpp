@@ -1,6 +1,8 @@
 #include <iostream>
 #include "/home/ubuntu/GameProject/SOKC/Controller.h"
 #include <gtest/gtest.h>
+#include <thread>
+#include <unistd.h>
 
 using namespace std;
 
@@ -9,7 +11,6 @@ TEST(HEADER,0_room_check){
     Json::Value out;
     Json::Value toOne;
     toOne["Header"]=0;
-    toOne["Content"];
     toOne["Content"]["serverConnect"]=1;
     out["toOne"]=toOne;
     EXPECT_EQ(controller.control("{\"Header\":0,\"Content\":{\"roomId\":100}}"),out);
@@ -23,14 +24,11 @@ TEST(HEADER,1_room_enter){
     Json::Value other;
     Json::Value other2;
     toOne["Header"]=1;
-    toOne["Content"];
     toOne["Content"]["id"]=expect1["toOne"]["Content"]["id"];
     other["Header"]=2;
-    other["Content"];
     other["Content"]["id"]=expect1["toOne"]["Content"]["id"];
     other["Content"]["name"]="YM";
     other2["Header"]=3;
-    other2["Content"];
     other2["Content"]["id"]=expect1["toOne"]["Content"]["id"];
     other2["Content"]["colorId"]=1;
     out["toOne"]=toOne;
@@ -44,7 +42,6 @@ TEST(HEADER,1_room_enter){
     Json::Value out1;
     Json::Value toOne1;
     toOne1["Header"]=0;
-    toOne1["Content"];
     toOne1["Content"]["serverConnect"]=-1;
     out1["toOne"]=toOne1;
     EXPECT_EQ(controller.control("{\"Header\":0,\"Content\":{\"roomId\":100}}"),out1);
@@ -85,7 +82,6 @@ TEST(HEADER,3_color_change_info){
     Json::Value out;
     Json::Value other;
     other["Header"]=3;
-    other["Content"];
     other["Content"]["id"]=id;
     other["Content"]["colorId"]=4;
     out["other"]=other;
@@ -100,7 +96,6 @@ TEST(HEADER,4_room_list_get){
     Json::Value out;
     Json::Value toOne;
     toOne["Header"]=4;
-    toOne["Content"];
     toOne["Content"]["playerList"]="[{\"id\":"+to_string(id)+",\"name\":\"YM\",\"color\":3}]";
     out["toOne"]=toOne;
     EXPECT_EQ(controller.control("{\"Header\":4}"),out);
@@ -118,7 +113,6 @@ TEST(HEADER,5_exit_info){
     Json::Value out;
     Json::Value other;
     other["Header"]=5;
-    other["Content"];
     other["Content"]["id"]=id;
     out["other"]=other;
     string temp="{\"Header\":5,\"Content\":{\"id\":"+to_string(id)+"}}";
@@ -136,7 +130,6 @@ TEST(HEADER,8_host_game_setting){
     Json::Value out;
     Json::Value other;
     other["Header"]=8;
-    other["Content"];
     other["Content"]["molgoCount"]=1;
     other["Content"]["ysfbcCount"]=1;
     other["Content"]["missionCount"]=1;
@@ -153,7 +146,6 @@ TEST(HEADER,9_get_game_setting){
     Json::Value out;
     Json::Value toOne;
     toOne["Header"]=9;
-    toOne["Content"];
     toOne["Content"]["molgoCount"]=1;
     toOne["Content"]["ysfbcCount"]=1;
     toOne["Content"]["missionCount"]=1;
@@ -161,7 +153,6 @@ TEST(HEADER,9_get_game_setting){
     controller.control("{\"Header\":8,\"Content\":{\"molgoCount\":1,\"ysfbcCount\":1,\"missionCount\":1}}");
     EXPECT_EQ(controller.control("{\"Header\":9}"),out);
     toOne["Header"]=9;
-    toOne["Content"];
     toOne["Content"]["molgoCount"]=2;
     toOne["Content"]["ysfbcCount"]=2;
     toOne["Content"]["missionCount"]=2;
@@ -169,6 +160,15 @@ TEST(HEADER,9_get_game_setting){
     controller.control("{\"Header\":8,\"Content\":{\"molgoCount\":2,\"ysfbcCount\":2,\"missionCount\":2}}");
     EXPECT_EQ(controller.control("{\"Header\":9}"),out);
 
+}
+
+TEST(HEADER,10_game_start){
+    Controller controller=Controller();
+    controller.control("{\"Header\":8,\"Content\":{\"molgoCount\":1,\"ysfbcCount\":1,\"missionCount\":1}}");
+    int id1=controller.game.joinPlayer("YM");
+    int id2=controller.game.joinPlayer("SH");
+    int id3=controller.game.joinPlayer("SJ");
+    cout<<controller.control("{\"Header\":10}")<<endl;
 }
 
 
@@ -188,22 +188,21 @@ TEST(HEADER,30_moving_check){
     EXPECT_EQ(controller.game.findPlayer(id3).getPosition(), temp3);
 }
 
-// TEST(HEADER_30,get_position_check){
-//     Controller controller=Controller();
-//     int id1=controller.game.joinPlayer("YM");
-//     int id2=controller.game.joinPlayer("SH");
-//     int id3=controller.game.joinPlayer("SJ");
-//     controller.control("{\"Header\":30,\"Content\":{\"id\":"+std::to_string(id1)+",\"x\":3.140000,\"y\":6.20000}}");
-//     controller.control("{\"Header\":30,\"Content\":{\"id\":"+std::to_string(id2)+",\"x\":3.530000,\"y\":0.700000}}");
-//     controller.control("{\"Header\":30,\"Content\":{\"id\":"+std::to_string(id3)+",\"x\":6.310000,\"y\":10.300000}}");
-//     Json::Value out;
-//     Json::Value toAll;
-//     toAll["Header"]=30;
-//     toAll["Content"];
-//     toAll["Content"]["playerPositions"]="[(\"id\":"+to_string(id1)+",\"x\":3.140000,\"y\":6.200000),(\"id\":"+to_string(id2)+",\"x\":3.530000,\"y\":0.700000),(\"id\":"+to_string(id3)+",\"x\":6.310000,\"y\":10.300000)]";
-//     out["toAll"]=toAll;
-//     EXPECT_EQ(controller.positions(),out);
-// }
+TEST(HEADER_31,get_position_check){
+    Controller controller=Controller();
+    int id1=controller.game.joinPlayer("YM");
+    int id2=controller.game.joinPlayer("SH");
+    int id3=controller.game.joinPlayer("SJ");
+    controller.control("{\"Header\":30,\"Content\":{\"id\":"+std::to_string(id1)+",\"x\":3.140000,\"y\":6.20000}}");
+    controller.control("{\"Header\":30,\"Content\":{\"id\":"+std::to_string(id2)+",\"x\":3.530000,\"y\":0.700000}}");
+    controller.control("{\"Header\":30,\"Content\":{\"id\":"+std::to_string(id3)+",\"x\":6.310000,\"y\":10.300000}}");
+    Json::Value out;
+    Json::Value toAll;
+    toAll["Header"]=31;
+    toAll["Content"]["playerPositions"]="[{\"id\":"+to_string(id1)+",\"x\":3.140000,\"y\":6.200000},{\"id\":"+to_string(id2)+",\"x\":3.530000,\"y\":0.700000},{\"id\":"+to_string(id3)+",\"x\":6.310000,\"y\":10.300000}]";
+    out["toAll"]=toAll;
+    EXPECT_EQ(controller.positions(),out);
+}
 
 TEST(HEADER,32_kill_check){
     Controller controller=Controller();
@@ -219,8 +218,6 @@ TEST(HEADER,32_kill_check){
     Json::Value toOne;
     other["Header"]=32;
     toOne["Header"]=32;
-    other["Content"];
-    toOne["Content"];
     other["Content"]["id"]=0;
     other["Content"]["victim"]=id2;
     toOne["Content"]["id"]=id1;
@@ -236,8 +233,6 @@ TEST(HEADER,32_kill_check){
     //different team(poolc kill molgo)
     other["Header"]=32;
     toOne["Header"]=32;
-    other["Content"];
-    toOne["Content"];
     other["Content"]["id"]=0;
     other["Content"]["victim"]=id3;
     toOne["Content"]["id"]=id2;
@@ -251,8 +246,6 @@ TEST(HEADER,32_kill_check){
     //same team(molgo kill molgo)
     other["Header"]=32;
     toOne["Header"]=32;
-    other["Content"];
-    toOne["Content"];
     other["Content"]["id"]=0;
     other["Content"]["victim"]=id1;
     toOne["Content"]["id"]=id3;
@@ -297,9 +290,28 @@ TEST(HEADER,33_mission_check){
 }
 
 
-
+void thread1(){
+    int count=10;
+    Controller controller;
+    int id1=controller.game.joinPlayer("YM");
+    int id2=controller.game.joinPlayer("SH");
+    int id3=controller.game.joinPlayer("SJ");
+    controller.game.findPlayer(id1).setPosition(1.1,4.3);
+    controller.game.findPlayer(id2).setPosition(1.3,6.3);
+    controller.game.findPlayer(id3).setPosition(1.5,10.3);
+    while(count){
+        usleep(166666);
+        controller.game.findPlayer(id1).setPosition(count+1,4.3);
+        controller.game.findPlayer(id2).setPosition(count+2,6.3);
+        controller.game.findPlayer(id3).setPosition(count+3,10.3);
+        cout<<controller.positions().toStyledString()<<endl;
+        count--;
+    }
+}
 
 int main(int argc, char **argv){
     ::testing::InitGoogleTest(&argc, argv);
+    // thread t1(thread1);
+    // t1.join();
     return RUN_ALL_TESTS();
 }

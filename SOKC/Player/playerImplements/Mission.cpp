@@ -61,4 +61,4 @@ void Mission::assign(int count, int id){
         }
     }
 };
-std::vector<std::vector<int>> Mission::combination={{1,2,3},{4,5,6},{7,8,9},{10,11,12}};
+std::vector<std::vector<int>> Mission::combination={{1,2,3},{4,5},{6,7},{8,25},{9,26},{10,27},{11,28},{12},{13},{14,15},{16},{17},{18},{19},{20,24},{21,22,23}};

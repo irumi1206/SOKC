@@ -14,6 +14,7 @@ TEST(HEADER,0_room_check){
     toOne["Content"]["serverConnect"]=1;
     out["toOne"]=toOne;
     EXPECT_EQ(controller.control("{\"Header\":0,\"Content\":{\"roomId\":100}}"),out);
+    cout<<out.toStyledString()<<endl;
 }
 //룸 입장, 다른 사람들에게 입장한 플레이어 정보(2), 입장한 플레이어 색(3)
 TEST(HEADER,1_room_enter){

@@ -105,7 +105,16 @@ Controller::Controller(){
             //게임 시작
             case 10:
             {
-
+                game.gameStart();
+                std::for_each(game.playerList.begin(),game.playerList.end(),[&](Player& player){
+                    Json::Value each;
+                    each["Header"]=10;
+                    each["Content"]["roleFlag"]=player.getRole();
+                    each["Content"]["missions"]=getMission(player);
+                    toAll[std::to_string(player.getId())]=each;
+                });
+                out["toAll"]=toAll;
+                return out;
             }
             //투표 소집
             case 20:
@@ -176,7 +185,7 @@ Controller::Controller(){
     Json::Value Controller::positions(){
         Json::Value out;
         Json::Value toAll;
-        toAll["Header"]=30;
+        toAll["Header"]=31;
         int i=0;
         int max=game.countPlayers()-1;
         std::string positions="[";
@@ -224,4 +233,20 @@ Controller::Controller(){
         else{
             return -1;
         }
+    }
+    std::string Controller::getMission(Player& player){
+        std::string out="[";
+        std::vector<int> missions=player.getMission();
+        int i=0;
+        int max=missions.size()-1;
+        std::for_each(missions.begin(),missions.end(),[&](int mission){
+            out+=std::to_string(mission);
+            if(i==max){
+                out+="]";
+            }else{
+                out+=", ";
+            }
+            i++;
+        });
+        return out;
     }

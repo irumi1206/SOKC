@@ -16,6 +16,7 @@ public:
     Json::Value positions();
     std::string playerInfo();
     int roomCheck(int roomId);
+    std::string getMission(Player& player);
 };
 
 #endif

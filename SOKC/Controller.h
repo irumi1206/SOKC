@@ -17,6 +17,8 @@ public:
     std::string playerInfo();
     int roomCheck(int roomId);
     std::string getMission(Player& player);
+    Json::Value gameEnd(Team team,int id);
+    std::string teamPlayers(Team team);
 };
 
 #endif

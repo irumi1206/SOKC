@@ -170,12 +170,6 @@ Controller::Controller(){
 
             }
             //게임 종료
-            case 100:
-            {
-                toAll["Header"]=100;
-                out["toAll"]=toAll;
-                return out;
-            }
             default:
             {
                 return out;
@@ -249,4 +243,48 @@ Controller::Controller(){
             i++;
         });
         return out;
+    }
+    Json::Value Controller::gameEnd(Team team,int id){
+        Json::Value toAll;
+        toAll["Header"]=100;
+        if(team==PoolC){
+            toAll["Content"]["victory"]=0;
+            toAll["Content"]["players"];
+        }else if(team==Morgo){
+            toAll["Content"]["victory"]=1;
+            toAll["Content"]["players"];
+        }else{
+            toAll["Content"]["victory"]=2;
+            toAll["Content"]["players"]="["+std::to_string(id)+"]";
+        }
+    }
+    std::string Controller::teamPlayers(Team team){
+        std::string teams="[";
+        if(team==PoolC){
+            int i=0;
+            int max=game.poolcList.size()-1;
+            std::for_each(game.poolcList.begin(),game.poolcList.end(),[&](int playerId){
+                teams+=std::to_string(playerId);
+                if(i==max){
+                    teams+="]";
+                }else{
+                    teams+=", ";
+                }
+                i++;
+            });
+            return teams;
+        }else if(team==Morgo){
+            int i=0;
+            int max=game.molgoList.size()-1;
+            std::for_each(game.poolcList.begin(),game.poolcList.end(),[&](int playerId){
+                teams+=std::to_string(playerId);
+                if(i==max){
+                    teams+="]";
+                }else{
+                    teams+=", ";
+                }
+                i++;
+            });
+            return teams;
+        }
     }

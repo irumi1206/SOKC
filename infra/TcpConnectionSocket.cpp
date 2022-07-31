@@ -1,15 +1,15 @@
-#include "tcpConnectionSocket.h"
+#include "TcpConnectionSocket.h"
 #include <vector>
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <iostream>
-#include "tcpConnection.h"
-tcpConnectionSocket::tcpConnectionSocket(){
+#include "TcpConnection.h"
+TcpConnectionSocket::TcpConnectionSocket(){
     port=-1;
     initialSocketDescriptor=-1;
 }
 
-void tcpConnectionSocket::setPort(int portNum){
+void TcpConnectionSocket::setPort(int portNum){
     port=portNum;
     if((initialSocketDescriptor=socket(AF_INET,SOCK_STREAM,0))==-1){
         std::cout<<"failed to create initial socket\n";
@@ -17,7 +17,7 @@ void tcpConnectionSocket::setPort(int portNum){
     std::cout<<"success creating initial socket\n";
 }
 
-void tcpConnectionSocket::getReady(){
+void TcpConnectionSocket::getReady(){
     setSocketOption();
     setAddress();
     bindAddress();
@@ -25,7 +25,7 @@ void tcpConnectionSocket::getReady(){
     std::cout<<"socket is ready to get connection...\n";
 }
 
-void tcpConnectionSocket::setSocketOption(){
+void TcpConnectionSocket::setSocketOption(){
     int opt=1;
     if(setsockopt(initialSocketDescriptor,SOL_SOCKET,SO_REUSEADDR,&opt,sizeof(opt))==-1){
         std::cout<<"failed to set socket option\n";
@@ -33,29 +33,29 @@ void tcpConnectionSocket::setSocketOption(){
     std::cout<<"success on setting socket option\n";
 }
 
-void tcpConnectionSocket::setAddress(){
+void TcpConnectionSocket::setAddress(){
     serverAddress.sin_family=AF_INET;
     serverAddress.sin_addr.s_addr=INADDR_ANY;
     serverAddress.sin_port=htons(port);
     std::cout<<"success on setting socket address\n";
 }
 
-void tcpConnectionSocket:: bindAddress(){
+void TcpConnectionSocket:: bindAddress(){
     if(bind(initialSocketDescriptor, (struct sockaddr*) &serverAddress,sizeof(serverAddress))==-1){
         std::cout<<"failed to bind socket\n";
     }
     std::cout<<"success on binding socket\n";
 }
 
-void tcpConnectionSocket::setSocketStatePassive(){
+void TcpConnectionSocket::setSocketStatePassive(){
     if(listen(initialSocketDescriptor,16)==-1){
         std::cout<<"failed to set socket to passvie mode\n";
     }
     std::cout<<"success on setting socket to passive mode\n";
 }
 
-tcpConnection tcpConnectionSocket::getConnectedSocket(){
-    tcpConnection temp=tcpConnection();
+TcpConnection TcpConnectionSocket::getConnectedSocket(){
+    TcpConnection temp=TcpConnection();
     int connectionSocket;
     int serverAddressLen=sizeof(serverAddress);
     if((connectionSocket=accept(initialSocketDescriptor, (struct sockaddr*) &serverAddress, (socklen_t*) &serverAddressLen))==-1){

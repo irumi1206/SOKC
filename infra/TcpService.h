@@ -2,24 +2,28 @@
 #define TCPSERVICE_H
 #include <vector>
 #include <thread>
-#include "tcpConnectionSocket.h"
-#include "tcpConnection.h"
-// //==추가==//
+#include "TcpConnectionSocket.h"
+#include "TcpConnection.h"
 #include "/home/ubuntu/GameProject/SOKC/Controller.h"
-// //==여기까지==//
 
-class tcpService{
+class TcpService{
     private :
         int clientNum;
         // //==추가==//
         Controller controller;
+        Json::Value null;
         // //==여기==//
-        tcpConnectionSocket masterSocket;
-        std::vector<tcpConnection> connectedClients;
+        TcpConnectionSocket masterSocket;
+        std::vector<TcpConnection> connectedClients;
         std::vector<std::thread> threads;
+        std::vector<int> alive;
         void clientLogic(int clientIndex);
+        void toAll(std::string out);
+        void toOne(int ind,std::string out);
+        void toOthers(int ind,std::string out);
+
     public :
-        tcpService();
+        TcpService();
         void setPort(int portNum);
         void start();
         

@@ -4,15 +4,15 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>
-#include "tcpConnectionSocket.h"
-#include "tcpService.h"
-#include "tcpConnection.h"
+#include "TcpConnectionSocket.h"
+#include "TcpService.h"
+#include "TcpConnection.h"
 #include <iostream>
 #define PORT 8080
 #define LEN 1024
 int main(int argc, char const* argv[])
 {
-    tcpService service=tcpService();
+    TcpService service=TcpService();
     service.setPort(PORT);
     service.start();
 

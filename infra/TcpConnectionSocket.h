@@ -2,9 +2,9 @@
 #define TCPCONNECTIONSOCKET_H
 #include <vector>
 #include <netinet/in.h>
-#include "tcpConnection.h"
+#include "TcpConnection.h"
 
-class tcpConnectionSocket{
+class TcpConnectionSocket{
     private :
         int port;
         int initialSocketDescriptor;
@@ -16,10 +16,10 @@ class tcpConnectionSocket{
         void setSocketStatePassive();
 
     public :
-        tcpConnectionSocket();
+        TcpConnectionSocket();
         void setPort(int portNum);
         void getReady();
-        tcpConnection getConnectedSocket();
+        TcpConnection getConnectedSocket();
 
 
 };

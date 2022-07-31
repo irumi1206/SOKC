@@ -1,12 +1,12 @@
-#ifndef GENERALSOCKET_H
-#define GENERALSOCKET_H
+#ifndef TCPCONNECTION_H
+#define TCPCONNECTION_H
 
-class tcpConnection{
+class TcpConnection{
     private :
         int tcpSocket;
 
     public :
-        tcpConnection();
+        TcpConnection();
         void setTcpSocket(int socketDescriptor);
         void in(char* buffer,int len);
         void out(char* message);

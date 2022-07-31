@@ -1,19 +1,20 @@
-
+INFRA_PATH=/home/ubuntu/GameProject/infra/
+SOKC_PATH=/home/ubuntu/GameProject/compile/logicCompile/
 
 tcpServer : tcpServer.o tcpService.o tcpConnectionSocket.o tcpConnection.o
-	g++ -std=c++2a /home/ubuntu/GameProject/Project/SOKCH/compile/Score.o /home/ubuntu/GameProject/Project/SOKCH/compile/Role.o /home/ubuntu/GameProject/Project/SOKCH/compile/Position.o /home/ubuntu/GameProject/Project/SOKCH/compile/Game.o /home/ubuntu/GameProject/Project/SOKCH/compile/Player.o /home/ubuntu/GameProject/Project/SOKCH/compile/Mission.o /home/ubuntu/GameProject/Project/SOKCH/compile/JsonParser.o /home/ubuntu/GameProject/Project/SOKCH/compile/Controller.o tcpServer.o tcpService.o tcpConnectionSocket.o tcpConnection.o -ljsoncpp -lpthread -o tcpServer
+	g++ -std=c++2a $(SOKC_PATH)Score.o $(SOKC_PATH)Role.o $(SOKC_PATH)Position.o $(SOKC_PATH)Game.o $(SOKC_PATH)Player.o $(SOKC_PATH)Mission.o $(SOKC_PATH)JsonParser.o $(SOKC_PATH)Controller.o tcpServer.o tcpService.o tcpConnectionSocket.o tcpConnection.o -ljsoncpp -lpthread -o tcpServer
 
-tcpServer.o : tcpServer.cpp tcpService.h tcpConnectionSocket.h tcpConnection.h
-	g++ -std=c++2a -c tcpServer.cpp
+tcpServer.o : $(INFRA_PATH)tcpServer.cpp $(INFRA_PATH)tcpService.h $(INFRA_PATH)tcpConnectionSocket.h $(INFRA_PATH)tcpConnection.h
+	g++ -std=c++2a -c $(INFRA_PATH)tcpServer.cpp
 
-tcpService.o : tcpService.cpp tcpService.h tcpConnectionSocket.h tcpConnection.h 
-	g++ -std=c++2a -c tcpService.cpp
+tcpService.o : $(INFRA_PATH)tcpService.cpp $(INFRA_PATH)tcpService.h $(INFRA_PATH)tcpConnectionSocket.h $(INFRA_PATH)tcpConnection.h 
+	g++ -std=c++2a -c $(INFRA_PATH)tcpService.cpp
 
-tcpConnectionSocket.o : tcpConnectionSocket.cpp tcpConnectionSocket.h tcpConnection.h
-	g++ -std=c++2a -c tcpConnectionSocket.cpp
+tcpConnectionSocket.o : $(INFRA_PATH)tcpConnectionSocket.cpp $(INFRA_PATH)tcpConnectionSocket.h $(INFRA_PATH)tcpConnection.h
+	g++ -std=c++2a -c $(INFRA_PATH)tcpConnectionSocket.cpp
 
-tcpConnection.o : tcpConnection.cpp tcpConnection.h
-	g++ -std=c++2a -c tcpConnection.cpp
+tcpConnection.o : $(INFRA_PATH)tcpConnection.cpp $(INFRA_PATH)tcpConnection.h
+	g++ -std=c++2a -c $(INFRA_PATH)tcpConnection.cpp
 
 udpServer : udpServer.o udpService.o udpConnection.o
 	g++ udpServer.o udpService.o udpSocket.o -o udpServer
@@ -27,8 +28,8 @@ udpService.o : udpService.cpp udpService.h udpConnection.h
 udpConnection.o : udpConnection.cpp udpConnection.h
 	g++ -c udpConnection.cpp
 
-tcpClient : tcpClient.cpp
-	g++ -std=c++2a tcpClient.cpp -o tcpClient
+tcpClient : $(INFRA_PATH)tcpClient.cpp
+	g++ -std=c++2a $(INFRA_PATH)tcpClient.cpp -o tcpClient
 
 udpClient : udpClient.cpp
 	g++ udpClient.cpp -o udpClient

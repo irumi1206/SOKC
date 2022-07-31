@@ -47,35 +47,6 @@ TEST(HEADER,1_room_enter){
     EXPECT_EQ(controller.control("{\"Header\":0,\"Content\":{\"roomId\":100}}"),out1);
 }
 
-// TEST(HEADER_1,playerListTest){
-//     Controller controller=Controller();
-//     Json::Value out;
-//     Json::Value toOne;
-//     Json::Value toAll;
-//     toOne["Header"]=1;
-//     toOne["Content"];
-//     toOne["Content"]["id"]=10003;
-//     toOne["Content"]["playerList"]="[]";//구현 필요
-//     toAll["Header"]=1;
-//     toAll["Content"];
-//     toAll["Content"]["id"]=10003;
-//     toAll["Content"]["name"]="YM";
-//     out["toOne"]=toOne;
-//     out["toAll"]=toAll;
-//     EXPECT_EQ(controller.control("{\"Header\":1,\"Content\":{\"roomId\":100,\"name\":\"YM\"}}"),out);
-//     toOne["Header"]=1;
-//     toOne["Content"];
-//     toOne["Content"]["id"]=10003;
-//     toOne["Content"]["playerList"]="[(\"id\":10026,\"name\":\"YM\",\"color\":0)]";//"[(10003,YM,0)]", 구현 필요
-//     toAll["Header"]=1;
-//     toAll["Content"];
-//     toAll["Content"]["id"]=10003;
-//     toAll["Content"]["name"]="YMK";
-//     out["toOne"]=toOne;
-//     out["toAll"]=toAll;
-//     EXPECT_EQ(controller.control("{\"Header\":1,\"Content\":{\"roomId\":100,\"name\":\"YMK\"}}"),out);
-// }
-
 TEST(HEADER,3_color_change_info){
     Controller controller=Controller();
     int id=controller.game.joinPlayer("YM");

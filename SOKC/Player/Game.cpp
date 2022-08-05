@@ -113,21 +113,18 @@ void Game::assignRole(){
             temp2=rand()%poolcAbilitySize;
             playerList[i].setRole(poolcAbility[temp2]);
             poolcAbility.erase(poolcAbility.begin()+temp2);
-            poolcList.push_back(playerList[i].getId());
             poolcCount-=1;
         }else if(temp<poolcCount+molgoCount){
             int molgoAbilitySize=molgoAbility.size();
             temp2=rand()%molgoAbilitySize;
             playerList[i].setRole(molgoAbility[temp2]);
             molgoAbility.erase(molgoAbility.begin()+temp2);
-            molgoList.push_back(playerList[i].getId());
             molgoCount-=1;
         }else{
             int midAbilitySize=midAbility.size();
             temp2=rand()%midAbilitySize;
             playerList[i].setRole(midAbility[temp2]);
             midAbility.erase(midAbility.begin()+temp2);
-            midList.push_back(playerList[i].getId());
             midCount-=1;
         }
         playercount-=1;
@@ -135,15 +132,15 @@ void Game::assignRole(){
     }
 }
 
-std::vector<int> Game::getPoolc(){
-    return poolcList;
-}
-std::vector<int> Game::getMolgo(){
-    return molgoList;
-}
-std::vector<int> Game::getMid(){
-    return midList;
-}
+// std::vector<int> Game::getPoolc(){
+//     return poolcList;
+// }
+// std::vector<int> Game::getMolgo(){
+//     return molgoList;
+// }
+// std::vector<int> Game::getMid(){
+//     return midList;
+// }
 
 void Game::setMolgoCount(int molgo){
     this->molgoCount=molgo;
@@ -183,6 +180,23 @@ void Game::gameStart(){
     assignRole();
     std::for_each(playerList.begin(),playerList.end(),[&](Player& player){
         player.live();
+        player.setStatus(Gaming);
         player.assignMission(missionCount);
     });
+}
+//투표
+void Game::clearVoteStorage(){
+    this->voteStorage.clear();
+}
+
+void Game::putVote(int votingPlayerId,int votedPlayerId){
+    this->voteStorage.push_back(VotingStatus(votingPlayerId,votedPlayerId));
+}
+int Game::calculateVoteDead(){
+    return -1;
+}
+
+bool Game::checkEnd(){
+    return false;
+    //추가 해야 함.
 }

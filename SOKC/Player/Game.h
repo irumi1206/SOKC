@@ -5,17 +5,27 @@
 #include <vector>
 #include <algorithm>
 #include <cstdlib>
+#include "VotingStatus.h"
+
 class Game{
 public: 
     int id;//방 id
     std::vector<Player> playerList;//방에 참여해 있는 플레이어들을 담는 구조체
     int hostId;
-    std::vector<int> poolcList;
-    std::vector<int> molgoList;
-    std::vector<int> midList;
+    // std::vector<int> poolcList;
+    // std::vector<int> molgoList;
+    // std::vector<int> midList;
     int molgoCount=2;
     int midCount=2;
     int missionCount=3;
+
+    //투표 추가
+    std::vector<VotingStatus> voteStorage;
+    void clearVoteStorage();
+    void putVote(int votingPlayerId,int votedPlayerId);
+    int calculateVoteDead();
+    //
+
 public:
     //게임 시작 함수
     void gameStart();
@@ -55,9 +65,10 @@ public:
     int getMidCount();
     int getMissionCount();
     void assignRole();
-    std::vector<int> getPoolc();
-    std::vector<int> getMolgo();
-    std::vector<int> getMid();
+    // std::vector<int> getPoolc();
+    // std::vector<int> getMolgo();
+    // std::vector<int> getMid();
     int emptyColor();
+    bool checkEnd();
 };
 #endif

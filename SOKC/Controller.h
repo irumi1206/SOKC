@@ -19,6 +19,9 @@ public:
     std::string getMission(Player& player);
     Json::Value gameEnd(Team team,int id);
     std::string teamPlayers(Team team);
+    //투표
+    std::string voteInfo();
+    std::string deadList();
 };
 
 #endif

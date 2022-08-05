@@ -66,6 +66,9 @@
             if(Oth!=null){
                 toOthers(clientIndex,Oth.toStyledString());
             }
+            if(temp["other2"]!=null){
+                toOthers(clientIndex,temp["other2"].toStyledString());
+            }
             // //==여기까지==//
             printf("client %d : %s\n", clientNum, buffer);
             

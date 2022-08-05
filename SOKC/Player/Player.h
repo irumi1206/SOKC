@@ -6,9 +6,15 @@
 #include "playerImplements/Mission.h"
 #include "playerImplements/Role.h"
 
+enum PlayStatus{
+    Ready,
+    Gaming
+};
+
 class Player
 {
 private:
+    PlayStatus status;
     std::string name;
     int id;
     CharacterRoleFlag roleflag;//직업(역할)
@@ -32,6 +38,8 @@ public: //getter & setter
     //id는 바꿀 수 없으므로 setId는 만들어놓지 않음.
     int getColor();
     void setColor(int color);
+    void setStatus(PlayStatus status);
+    PlayStatus getPlayStatus();
 public://role
     Team getTeam();
     int getRole();

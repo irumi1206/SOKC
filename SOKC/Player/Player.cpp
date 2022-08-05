@@ -123,3 +123,11 @@ int Player::getSOTGScore(){
 float Player::votingAccuracy(){
     return this->score.votingAccuracy();
 };
+
+void Player::setStatus(PlayStatus status){
+    this->status=status;
+}
+
+PlayStatus Player::getPlayStatus(){
+    return this->status;
+}

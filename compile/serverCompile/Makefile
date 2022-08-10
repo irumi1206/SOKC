@@ -16,23 +16,18 @@ TcpConnectionSocket.o : $(INFRA_PATH)TcpConnectionSocket.cpp $(INFRA_PATH)TcpCon
 TcpConnection.o : $(INFRA_PATH)TcpConnection.cpp $(INFRA_PATH)TcpConnection.h
 	g++ -std=c++2a -c $(INFRA_PATH)TcpConnection.cpp
 
-# udpServer : udpServer.o udpService.o udpConnection.o
-# 	g++ udpServer.o udpService.o udpSocket.o -o udpServer
-
-# udpServer.o : udpServer.cpp udpService.h udpConnection.h
-# 	g++ -c udpSercer.cpp
-
-# udpService.o : udpService.cpp udpService.h udpConnection.h
-# 	g++ -c udpService.cpp
-
-# udpConnection.o : udpConnection.cpp udpConnection.h
-# 	g++ -c udpConnection.cpp
+UdpServer : UdpServer.cpp
+	g++ std=c++2a $(INFRA_PATH)UdpServer.cpp -o UdpServer
 
 TcpClient : $(INFRA_PATH)TcpClient.cpp
 	g++ -std=c++2a $(INFRA_PATH)TcpClient.cpp -o TcpClient
 
-# udpClient : udpClient.cpp
-# 	g++ udpClient.cpp -o udpClient
+UdpClient : UdpClient.cpp
+	g++ std=c++2a $(INFRA_PATH)UdpClient.cpp -o UdpClient
+
+cleanUdp :
+	rm -rf UdpServer
+	rm -rf UdpClient
 
 clean :
 	rm -rf *.o

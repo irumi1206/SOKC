@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <ctime>
 #include "Game.h"
+#include <map>
 
 //생성자, id는 임시적으로 100할당
 Game::Game(){
@@ -191,9 +192,36 @@ void Game::clearVoteStorage(){
 
 void Game::putVote(int votingPlayerId,int votedPlayerId){
     this->voteStorage.push_back(VotingStatus(votingPlayerId,votedPlayerId));
+    Player votingPlayer=findPlayer(votingPlayerId);
+    Player votedPlayer=findPlayer(votedPlayerId);
+    if(votingPlayer.getTeam()!=votedPlayer.getTeam()){
+        votingPlayer.addVotingAc(1);
+    }else{
+        votingPlayer.addVotingMi(1);
+    }
 }
+std::map<int,int> Game::voteInfo(){
+    std::map<int,int> storage;
+    for(VotingStatus currentVote:voteStorage){
+        storage[currentVote.votedPlayerId]++;
+    };
+    return storage;
+}
+
 int Game::calculateVoteDead(){
-    return -1;
+    std::map<int,int> storage=voteInfo();
+
+    int id=-1;
+    int count=0;
+    for(auto current=storage.begin();current!=storage.end();current++){
+        if(current->second==count) id=-1;
+        else if(current->second>count){
+            id=current->first;
+            count=current->second;
+        }
+    }
+
+    return id;
 }
 
 bool Game::checkEnd(){

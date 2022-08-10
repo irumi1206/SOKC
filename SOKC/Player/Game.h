@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include "VotingStatus.h"
+#include <map>
 
 class Game{
 public: 
@@ -70,5 +71,6 @@ public:
     // std::vector<int> getMid();
     int emptyColor();
     bool checkEnd();
+    std::map<int,int> voteInfo();
 };
 #endif

@@ -5,6 +5,7 @@
 #include <algorithm>
 #include "jsonParser/JsonParser.h"
 #include "Player/Game.h"
+#include <map>
 
 class Controller
 {
@@ -14,14 +15,14 @@ public:
     Controller();
     Json::Value control(std::string in);
     Json::Value positions();
-    std::string playerInfo();
+    Json::Value playerInfo();
     int roomCheck(int roomId);
-    std::string getMission(Player& player);
+    Json::Value getMission(Player& player);
     Json::Value gameEnd(Team team,int id);
-    std::string teamPlayers(Team team);
+    Json::Value teamPlayers(Team team);
     //투표
-    std::string voteInfo();
-    std::string deadList();
+    Json::Value voteResult();
+    Json::Value deadList();
 };
 
 #endif

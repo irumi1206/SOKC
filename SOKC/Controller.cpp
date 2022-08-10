@@ -3,6 +3,7 @@
 #include <algorithm>
 #include "Controller.h"
 #include <utility>
+#include <map>
 
 Controller::Controller(){
     this->game=Game();
@@ -43,7 +44,7 @@ Json::Value Controller::control(std::string in){
             Json::Value other2;
             other2["Header"]=3;
             other2["Content"]["id"]=id;
-            other2["Content"]["colorId"]=game.findPlayer(id).getColor();
+            other2["Content"]["color"]=game.findPlayer(id).getColor();
             out["other2"]=other2;
 
             return out;
@@ -53,10 +54,10 @@ Json::Value Controller::control(std::string in){
         {
             other["Header"]=3;
             int id=data["Content"]["id"].asInt();
-            int colorId=data["Content"]["colorId"].asInt();
-            game.findPlayer(id).setColor(colorId);
+            int color=data["Content"]["color"].asInt();
+            game.findPlayer(id).setColor(color);
             other["Content"]["id"]=id;
-            other["Content"]["colorId"]=colorId;
+            other["Content"]["color"]=color;
             out["other"]=other;
             return out;
         }
@@ -130,7 +131,7 @@ Json::Value Controller::control(std::string in){
             toAll["Header"]=20;
             toAll["Content"]["id"]=voteCallPlayerId;
             toAll["Content"]["by"]=victomFlag;
-            //toAll["Content"]["by"=function();
+            //toAll["Content"]["deadsList"]=function();
             out["toAll"]=toAll;
             return out;
         }
@@ -145,23 +146,24 @@ Json::Value Controller::control(std::string in){
             out["other"]=other;
             return out;
         }
-        //투표 결과
+        //투표 결과 ->자동으로 실행되게 해야 함.
         case 22:
         {
-            toAll["Content"]["voteDatas"]=voteInfo();
+            toAll["Content"]["voteDatas"]=voteResult();
             out["toAll"]=toAll;
             return out;
         }
-        //투표 사망
+        //투표 사망 ->Header22가 실행되면 같이 실행되게 해야 함.
         case 23:
         {
             int deadId=game.calculateVoteDead();
-            toAll["Content"]["id"]= deadId;
+            game.findPlayer(deadId).dead();
+            toAll["Content"]["id"]= game.calculateVoteDead();
             toAll["Content"]["role"]=game.findPlayer(deadId).getRole();
             out["toAll"]=toAll;
             return out;
         }
-        //플레이어 이동
+        //플레이어 이동 ->스레드로 일정 시간마다 실행되게 해야 함.
         case 30:
         {
             game.findPlayer(data["Content"]["id"].asInt()).setPosition(data["Content"]["x"].asFloat(),data["Content"]["y"].asFloat());
@@ -211,48 +213,42 @@ Json::Value Controller::positions(){
     Json::Value out;
     Json::Value toAll;
     toAll["Header"]=31;
-    std::string positions="[";
+    Json::Value playerPositions;
+    // std::string positions="[";
     std::for_each(game.playerList.begin(), game.playerList.end(), [&](Player& player){
-        positions+="{";
-        positions+="\"id\":"+std::to_string(player.getId());
+        Json::Value positions;
+        positions["id"]=player.getId();
         std::tuple<float,float> position=player.getPosition();
-        positions+=",\"x\":"+std::to_string(std::get<0>(position));
-        positions+=",\"y\":"+std::to_string(std::get<1>(position));
-        positions+="},";
+        positions["x"]=std::get<0>(position);
+        positions["y"]=std::get<1>(position);
+        playerPositions.append(positions);
     });
-    positions=positions.substr(0, positions.length()-1);
-    positions+="]";
-    toAll["Content"]["playerPositions"]=positions;
+    toAll["Content"]["playerPositions"]=playerPositions;
     out["toAll"]=toAll;
     return out;
 };
-std::string Controller::playerInfo(){
-    std::string players="[";
+Json::Value Controller::playerInfo(){
+    Json::Value players;
     std::for_each(game.playerList.begin(),game.playerList.end(),[&](Player& player){
-        players+="{";
-        players+="\"id\":"+std::to_string(player.getId());
-        players+=",\"name\":\""+player.getName()+"\"";
-        players+=",\"color\":"+std::to_string(player.getColor());
-        players+="},";
+        Json::Value infomation;
+        infomation["id"]=player.getId();
+        infomation["name"]=player.getName();
+        infomation["color"]=player.getColor();
+        players.append(infomation);
     });
-    players=players.substr(0, players.length()-1);
-    players+="]";
     return players;
 }
-std::string Controller::voteInfo(){
-    std::string voteInfo="[";
-    for(int i=0;i<game.voteStorage.size();++i){
-        int votingPlayerId=game.voteStorage[i].votingPlayerId;
-        int votedPlayerId=game.voteStorage[i].votedPlayerId;
-        voteInfo+="{";
-        voteInfo+=std::to_string(votingPlayerId);
-        voteInfo+=",";
-        voteInfo+=std::to_string(votedPlayerId);
-        voteInfo+="}";
-        if(i!=game.voteStorage.size()-1) voteInfo+=",";
+Json::Value Controller::voteResult(){
+    std::map<int,int> storage=game.voteInfo();
+
+    Json::Value voteResult;
+    for(auto current=storage.begin();current!=storage.end();current++){
+        Json::Value result;
+        result["id"]=current->first;
+        result["voteNumber"]=current->second;
+        voteResult.append(result);
     }
-    voteInfo+="]";
-    return voteInfo;
+    return voteResult;
 }
 int Controller::roomCheck(int roomId){
     if(game.getId()==roomId && game.countPlayers()<16){
@@ -262,15 +258,12 @@ int Controller::roomCheck(int roomId){
         return -1;
     }
 }
-std::string Controller::getMission(Player& player){
-    std::string out="[";
+Json::Value Controller::getMission(Player& player){
+    Json::Value out;
     std::vector<int> missions=player.getMission();
     std::for_each(missions.begin(),missions.end(),[&](int mission){
-        out+=std::to_string(mission);
-        out+=", ";
+        out.append(mission);
     });
-    out=out.substr(0, out.length()-1);
-    out+="]";
     return out;
 }
 Json::Value Controller::gameEnd(Team team,int id){
@@ -284,31 +277,25 @@ Json::Value Controller::gameEnd(Team team,int id){
         toAll["Content"]["players"]=teamPlayers(Morgo);
     }else{
         toAll["Content"]["victory"]=2;
-        toAll["Content"]["players"]="["+std::to_string(id)+"]";
+        toAll["Content"]["players"].append(id);
     }
     return toAll;
 }
-std::string Controller::teamPlayers(Team team){
-    std::string out="[";
+Json::Value Controller::teamPlayers(Team team){
+    Json::Value out;
     std::for_each(game.playerList.begin(),game.playerList.end(),[&](Player& player){
         if(player.getTeam()==team){
-            out+=player.getId();
-            out+=",";
+            out.append(player.getId());
         }
     });
-    out=out.substr(0, out.length()-1);
-    out+="]";
     return out;
 }
-std::string Controller::deadList(){
-    std::string out="[";
+Json::Value Controller::deadList(){
+    Json::Value out;
     std::for_each(game.playerList.begin(),game.playerList.end(),[&](Player& player){
         if(player.getPlayStatus()==Gaming && !player.isDie()){
-            out+=player.getId();
-            out+=",";
+            out.append(player.getId());
         }
     });
-    out=out.substr(0, out.length()-1);
-    out+="]";
     return out;
 }

@@ -30,7 +30,7 @@ TEST(HEADER,1_room_enter){
     other["Content"]["name"]="YM";
     other2["Header"]=3;
     other2["Content"]["id"]=expect1["toOne"]["Content"]["id"];
-    other2["Content"]["color"]=1;
+    other2["Content"]["color"]=2;
     out["toOne"]=toOne;
     out["other"]=other;
     out["other2"]=other2;

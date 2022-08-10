@@ -157,7 +157,7 @@ int Game::getMidCount(){
 }
 int Game::emptyColor(){
     int result=1;
-    int i=0;
+    int i=1;
     while(result==1){
         result=0;
         i++;
@@ -192,8 +192,8 @@ void Game::clearVoteStorage(){
 
 void Game::putVote(int votingPlayerId,int votedPlayerId){
     this->voteStorage.push_back(VotingStatus(votingPlayerId,votedPlayerId));
-    Player votingPlayer=findPlayer(votingPlayerId);
-    Player votedPlayer=findPlayer(votedPlayerId);
+    Player& votingPlayer=findPlayer(votingPlayerId);
+    Player& votedPlayer=findPlayer(votedPlayerId);
     if(votingPlayer.getTeam()!=votedPlayer.getTeam()){
         votingPlayer.addVotingAc(1);
     }else{

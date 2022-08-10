@@ -45,7 +45,7 @@ compile :
 	make jsonparser.o
 	make votingStatus.o
 
-test : mission.o position.o role.o score.o player.o game.o controller.o jsonparser.o
+test : mission.o position.o role.o score.o player.o game.o controller.o jsonparser.o votingStatus.o
 	make testController.o
 	make testGame.o
 	make testPlayer.o

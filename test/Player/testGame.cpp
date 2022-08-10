@@ -68,14 +68,14 @@ TEST(color_test,assign_color_auto){
     int id6=game.joinPlayer("player6");
     int id7=game.joinPlayer("player7");
     int id8=game.joinPlayer("player8");
-    EXPECT_EQ(game.findPlayer(id1).getColor(),1);
-    EXPECT_EQ(game.findPlayer(id2).getColor(),2);
-    EXPECT_EQ(game.findPlayer(id3).getColor(),3);
-    EXPECT_EQ(game.findPlayer(id4).getColor(),4);
-    EXPECT_EQ(game.findPlayer(id5).getColor(),5);
-    EXPECT_EQ(game.findPlayer(id6).getColor(),6);
-    EXPECT_EQ(game.findPlayer(id7).getColor(),7);
-    EXPECT_EQ(game.findPlayer(id8).getColor(),8);
+    EXPECT_EQ(game.findPlayer(id1).getColor(),2);
+    EXPECT_EQ(game.findPlayer(id2).getColor(),3);
+    EXPECT_EQ(game.findPlayer(id3).getColor(),4);
+    EXPECT_EQ(game.findPlayer(id4).getColor(),5);
+    EXPECT_EQ(game.findPlayer(id5).getColor(),6);
+    EXPECT_EQ(game.findPlayer(id6).getColor(),7);
+    EXPECT_EQ(game.findPlayer(id7).getColor(),8);
+    EXPECT_EQ(game.findPlayer(id8).getColor(),9);
 }
 
 TEST(host_test,first_player_host){

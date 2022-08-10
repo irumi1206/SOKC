@@ -54,6 +54,7 @@
             // //==추 가==//
             Json::Value temp=controller.control(std::string(buffer));
             std::cout<<std::string(buffer)<<std::endl;
+            std::cout<<temp.toStyledString()<<std::endl;
             Json::Value One=temp["toOne"];
             Json::Value All=temp["toAll"];
             Json::Value Oth=temp["other"];

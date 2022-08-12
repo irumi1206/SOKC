@@ -39,7 +39,7 @@ int main() {
         exit(EXIT_FAILURE); 
     } 
         
-    int len, n; 
+    unsigned int len, n; 
     
     len = sizeof(cliaddr);  //len is value/result 
     

@@ -19,6 +19,7 @@ public:
     int molgoCount=2;
     int midCount=2;
     int missionCount=3;
+    int voteCount=1;
 
     //투표 추가
     std::vector<VotingStatus> voteStorage;

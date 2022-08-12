@@ -51,11 +51,11 @@ TEST(HEADER,3_color_change_info){
     Controller controller=Controller();
     int id=controller.game.joinPlayer("YM");
     Json::Value out;
-    Json::Value other;
-    other["Header"]=3;
-    other["Content"]["id"]=id;
-    other["Content"]["color"]=4;
-    out["other"]=other;
+    Json::Value toAll;
+    toAll["Header"]=3;
+    toAll["Content"]["id"]=id;
+    toAll["Content"]["color"]=4;
+    out["toAll"]=toAll;
     string temp="{\"Header\":3,\"Content\":{\"id\":"+to_string(id)+",\"color\":4}}";
     EXPECT_EQ(controller.control(temp),out);
 }
@@ -100,6 +100,23 @@ TEST(HEADER,5_exit_info){
     EXPECT_EQ(controller.game.countPlayers(),1);
     EXPECT_EQ(controller.control(temp),out);
     EXPECT_EQ(controller.game.countPlayers(),0);
+}
+
+TEST(HEADER,6_ready){
+    Controller controller=Controller();
+    int id=controller.game.joinPlayer("YM");
+    Json::Value out;
+    Json::Value toAll;
+    toAll["Header"]=6;
+    toAll["Content"]["id"]=id;
+    toAll["Content"]["readyOn"]=true;
+    out["toAll"]=toAll;
+    EXPECT_EQ(controller.control("{\"Header\":6,\"Content\":{\"id\":"+to_string(id)+",\"readyOn\":true}}"),out);
+    toAll["Header"]=6;
+    toAll["Content"]["id"]=id;
+    toAll["Content"]["readyOn"]=false;
+    out["toAll"]=toAll;
+    EXPECT_EQ(controller.control("{\"Header\":6,\"Content\":{\"id\":"+to_string(id)+",\"readyOn\":false}}"),out);
 }
 
 TEST(HEADER,8_host_game_setting){
@@ -349,7 +366,20 @@ TEST(HEADER,32_kill_check){
     EXPECT_EQ(controller.game.findPlayer(id3).getKillScore(),-1);
 }
 
-TEST(HEADER,33_mission_check){
+TEST(HEADER,33_death_check){
+    Controller controller = Controller();
+    int id1=controller.game.joinPlayer("YM");
+    int id2=controller.game.joinPlayer("SH");
+    int id3=controller.game.joinPlayer("SJ");
+    Json::Value out;
+    Json::Value toAll;
+    toAll["Header"]=33;
+    toAll["Content"]["id"]=id1;
+    out["toAll"]=toAll;
+    EXPECT_EQ(controller.death(id1),out);
+}
+
+TEST(HEADER,34_mission_check){
     Controller controller=Controller();
     int id1=controller.game.joinPlayer("YM");
     int id2=controller.game.joinPlayer("SH");
@@ -363,23 +393,36 @@ TEST(HEADER,33_mission_check){
     EXPECT_EQ(controller.game.findPlayer(id1).countMission(),3);
     EXPECT_EQ(controller.game.findPlayer(id2).countMission(),3);
     EXPECT_EQ(controller.game.findPlayer(id3).countMission(),0);
-    controller.control("{\"Header\":33,\"Content\":{\"id\":"+to_string(id1)+",\"missionId\":1}}");
+    controller.control("{\"Header\":34,\"Content\":{\"id\":"+to_string(id1)+",\"missionId\":1}}");
     EXPECT_EQ(controller.game.findPlayer(id1).countMission(),2);
     EXPECT_EQ(controller.game.findPlayer(id1).getMissionScore(),1);
     controller.game.findPlayer(id3).assignMission(3);
     EXPECT_EQ(controller.game.findPlayer(id3).countMission(),3);
     vector<int> missions=controller.game.findPlayer(id3).getMission();
-    controller.control("{\"Header\":33,\"Content\":{\"id\":"+to_string(id3)+",\"missionId\":"+to_string(missions[0])+"}}");
+    controller.control("{\"Header\":34,\"Content\":{\"id\":"+to_string(id3)+",\"missionId\":"+to_string(missions[0])+"}}");
     EXPECT_EQ(controller.game.findPlayer(id3).countMission(),2);
     EXPECT_EQ(controller.game.findPlayer(id3).getMissionScore(),1);
-    controller.control("{\"Header\":33,\"Content\":{\"id\":"+to_string(id3)+",\"missionId\":"+to_string(missions[1])+"}}");
+    controller.control("{\"Header\":34,\"Content\":{\"id\":"+to_string(id3)+",\"missionId\":"+to_string(missions[1])+"}}");
     EXPECT_EQ(controller.game.findPlayer(id3).countMission(),1);
     EXPECT_EQ(controller.game.findPlayer(id3).getMissionScore(),2);
-    controller.control("{\"Header\":33,\"Content\":{\"id\":"+to_string(id3)+",\"missionId\":"+to_string(missions[2])+"}}");
+    controller.control("{\"Header\":34,\"Content\":{\"id\":"+to_string(id3)+",\"missionId\":"+to_string(missions[2])+"}}");
     EXPECT_EQ(controller.game.findPlayer(id3).countMission(),0);
     EXPECT_EQ(controller.game.findPlayer(id3).getMissionScore(),3);
 }
 
+TEST(HEADER,90_player_mute){
+    Controller controller = Controller();
+    int id1=controller.game.joinPlayer("YM");
+    int id2=controller.game.joinPlayer("SH");
+    int id3=controller.game.joinPlayer("SJ");
+    Json::Value out;
+    Json::Value toAll;
+    toAll["Header"]=90;
+    toAll["Content"]["id"]=id1;
+    toAll["Content"]["muteOn"]=true;
+    out["toAll"]=toAll;
+    EXPECT_EQ(controller.control("{\"Header\":90,\"Content\":{\"id\":"+to_string(id1)+",\"muteOn\":true}}"),out);
+}
 
 void thread1(){
     int count=10;

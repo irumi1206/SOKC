@@ -12,6 +12,8 @@ class Controller
 public:
     Game game;
     const Json::Value null;
+    const std::string Header="Header";
+    const std::string Content="Content";
     Controller();
     Json::Value control(std::string in);
     Json::Value positions();
@@ -23,6 +25,7 @@ public:
     //투표
     Json::Value voteResult();
     Json::Value deadList();
+    Json::Value death(int id);
 };
 
 #endif

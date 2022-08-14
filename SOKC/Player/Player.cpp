@@ -13,11 +13,15 @@ Player::Player(){
 bool Player::isDie(){
     return this->die;
 };
-void Player::dead(){
+int Player::dead(){
     this->die=true;
+    return 1;
 };
 void Player::live(){
     this->die=false;
+};
+int Player::getVoteCount(){
+    return this->voteCount;
 };
 std::string Player::getName(){
     return name;

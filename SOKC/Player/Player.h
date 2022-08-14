@@ -24,14 +24,16 @@ private:
     Mission mission;//미션 object
     bool isHost;//해당 플레이어가 호스트인지
     int color;//색 확인
+    int voteCount=1;
 public://initializer
     Player(int id, std::string name);
     Player();
 public:
     bool isDie();
-    void dead();
+    int dead();
     void live();
 public: //getter & setter
+    int getVoteCount();
     std::string getName();
     void setName(std::string name);
     int getId();

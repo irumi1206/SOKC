@@ -8,7 +8,7 @@
 Controller::Controller(){
     this->game=Game();
 };
-Json::Value Controller::control(std::string in){
+Json::Value Controller::control(std::string in, int clientIndex){
     Json::Value data=toJson(in);
     Json::Value out;
     Json::Value toOne;
@@ -21,7 +21,7 @@ Json::Value Controller::control(std::string in){
             //플레이어 입장 시, 입장 가능한지 여부 확인
             toOne[Header]=0;
             toOne[Content]["serverConnect"]=roomCheck(data[Content]["roomId"].asInt());
-            out["toOne"]=toOne;
+            out["toOne"].append(toOne);
             return out;
         }
         //룸 입장
@@ -30,22 +30,28 @@ Json::Value Controller::control(std::string in){
             //플레이어 입장 시 해당 플레이어의 아이디를 반환함.
             toOne[Header]=1;
             std::string name=data[Content]["name"].asString();
-            int id=game.joinPlayer(name);
+            int id=game.joinPlayer(name,clientIndex);
             toOne[Content]["id"]=id;
-            out["toOne"]=toOne;
+            out["toOne"].append(toOne);
+
+            //플레이어 입장 시 호스트가 누구인지 알려줌.
+            Json::Value toOne1;
+            toOne1[Header]=7;
+            toOne1[Content]["id"]=game.getHost();
+            out["toOne"].append(toOne1);
 
             //플레이어 입장 시 다른 플레이어들에게 입장한 플레이어의 정보 반환
             other[Header]=2;
             other[Content]["id"]=id;
             other[Content]["name"]=name;
-            out["other"]=other;
+            out["other"].append(other);
 
             //플레이어 입장 시 입장한 플레이어가 색을 바꾸면서 색 설정
             Json::Value other2;
             other2[Header]=3;
             other2[Content]["id"]=id;
             other2[Content]["color"]=game.findPlayer(id).getColor();
-            out["other2"]=other2;
+            out["other"].append(other2);
 
             return out;
         }
@@ -58,7 +64,7 @@ Json::Value Controller::control(std::string in){
             game.findPlayer(id).setColor(color);
             toAll[Content]["id"]=id;
             toAll[Content]["color"]=color;
-            out["toAll"]=toAll;
+            out["toAll"].append(toAll);
             return out;
         }
         //룸내 플레이어 리스트 받아오기
@@ -66,7 +72,7 @@ Json::Value Controller::control(std::string in){
         {
             toOne[Header]=4;
             toOne[Content]["playerList"]=playerInfo();
-            out["toOne"]=toOne;
+            out["toOne"].append(toOne);
             return out;
         }
         //플레이어 퇴장
@@ -76,12 +82,13 @@ Json::Value Controller::control(std::string in){
             int id=data[Content]["id"].asInt();
             game.deletePlayer(id);
             other[Content]["id"]=id;
-            out["other"]=other;
+            out["other"].append(other);
             return out;
         }
+        //플레이어 레디
         case 6:
         {
-            out["toAll"]=data;
+            out["toAll"].append(data);
             return out;
         }
         //호스트가 게임 설정
@@ -100,7 +107,7 @@ Json::Value Controller::control(std::string in){
             other[Content]["molgoCount"]=game.getMolgoCount();
             other[Content]["ysfbcCount"]=game.getMidCount();
             other[Content]["missionCount"]=game.getMissionCount();
-            out["other"]=other;
+            out["other"].append(other);
             return out;
         }
         //게임 설정 가져오기
@@ -110,21 +117,21 @@ Json::Value Controller::control(std::string in){
             toOne[Content]["molgoCount"]=game.getMolgoCount();
             toOne[Content]["ysfbcCount"]=game.getMidCount();
             toOne[Content]["missionCount"]=game.getMissionCount();
-            out["toOne"]=toOne;
+            out["toOne"].append(toOne);
             return out;
         }
         //게임 시작
         case 10:
         {
             game.gameStart();
+            Json::Value each;
             std::for_each(game.playerList.begin(),game.playerList.end(),[&](Player& player){
-                Json::Value each;
-                each[Header]=10;
-                each[Content]["roleFlag"]=player.getRole();
-                each[Content]["missions"]=getMission(player);
-                toAll[std::to_string(player.getId())]=each;
+                each["recver"]=player.getId();
+                each["data"][Header]=10;
+                each["data"][Content]["roleFlag"]=player.getRole();
+                each["data"][Content]["missions"]=getMission(player);
             });
-            out["toAll"]=toAll;
+            out["toEach"].append(each);
             return out;
         }
         //투표 소집
@@ -137,7 +144,7 @@ Json::Value Controller::control(std::string in){
             toAll[Content]["id"]=voteCallPlayerId;
             toAll[Content]["by"]=victomFlag;
             //toAll[Content]["deadsList"]=function();
-            out["toAll"]=toAll;
+            out["toAll"].append(toAll);
             return out;
         }
         //투표
@@ -148,24 +155,21 @@ Json::Value Controller::control(std::string in){
             game.putVote(votingPlayerId,votedPlayerId);
             other[Header]=21;
             other[Content]["id"]=votingPlayerId;
-            out["other"]=other;
+            out["other"].append(other);
             return out;
         }
         //투표 결과 ->자동으로 실행되게 해야 함.
         case 22:
         {
             toAll[Content]["voteDatas"]=voteResult();
-            out["toAll"]=toAll;
-            return out;
-        }
-        //투표 사망 ->Header22가 실행되면 같이 실행되게 해야 함.
-        case 23:
-        {
+            out["toAll"].append(toAll);
+            Json::Value toAll1;
             int deadId=game.calculateVoteDead();
             game.findPlayer(deadId).dead();
-            toAll[Content]["id"]= game.calculateVoteDead();
-            toAll[Content]["role"]=game.findPlayer(deadId).getRole();
-            out["toAll"]=toAll;
+            toAll1[Header]=23;
+            toAll1[Content]["id"]= game.calculateVoteDead();
+            toAll1[Content]["role"]=game.findPlayer(deadId).getRole();
+            out["toAll"].append(toAll1);
             return out;
         }
         //플레이어 이동 ->스레드로 일정 시간마다 실행되게 해야 함.
@@ -190,7 +194,14 @@ Json::Value Controller::control(std::string in){
             toAll[Header]=32;
             toAll[Content]["id"]=id;
             toAll[Content]["victim"]=victim;
-            out["toAll"]=toAll;
+            out["toAll"].append(toAll);
+            //Header 33
+            if(victimPlayer.dead()){
+                Json::Value toAll1;
+                toAll1[Header]=33;
+                toAll1[Content]["id"]=victim;
+                out["toAll"].append(toAll1);
+            }
             return out;
         }
         //미션 클리어
@@ -202,11 +213,7 @@ Json::Value Controller::control(std::string in){
             game.findPlayer(id).addMissionScore(1);
             return out;
         }
-        //베네핏 획득
-        case 35:
-        {
-            
-        }
+    
         //능력 사용
         case 40:
         {
@@ -220,7 +227,7 @@ Json::Value Controller::control(std::string in){
         //플레이어 음소거
         case 90:
         {
-            out["toAll"]=data;
+            out["toAll"].append(data);
             return out;
         }
         //게임 종료
@@ -230,6 +237,13 @@ Json::Value Controller::control(std::string in){
         }
     }
 };
+//Header 7
+Json::Value Controller::setHost(int id){
+    Json::Value toAll;
+    toAll[Header]=7;
+    toAll[Content]["id"]=id;
+    return toAll;
+}
 //Header 31
 Json::Value Controller::positions(){
     Json::Value out;
@@ -245,9 +259,48 @@ Json::Value Controller::positions(){
         playerPositions.append(positions);
     });
     toAll[Content]["playerPositions"]=playerPositions;
-    out["toAll"]=toAll;
+    out["toAll"].append(toAll);
     return out;
 };
+//Header 35
+Json::Value Controller::benefitTaken(int id){
+    Json::Value out;
+    return out;
+}
+//Header 100
+Json::Value Controller::gameEnd(Team team,int id){
+    Json::Value toAll;
+    toAll[Header]=100;
+    if(team==PoolC){
+        toAll[Content]["victory"]=0;
+        toAll[Content]["players"]=teamPlayers(PoolC);
+    }else if(team==Morgo){
+        toAll[Content]["victory"]=1;
+        toAll[Content]["players"]=teamPlayers(Morgo);
+    }else{
+        toAll[Content]["victory"]=2;
+        toAll[Content]["players"].append(id);
+    }
+    return toAll;
+}
+Json::Value Controller::teamPlayers(Team team){
+    Json::Value out;
+    std::for_each(game.playerList.begin(),game.playerList.end(),[&](Player& player){
+        if(player.getTeam()==team){
+            out.append(player.getId());
+        }
+    });
+    return out;
+}
+Json::Value Controller::deadList(){
+    Json::Value list;
+    std::for_each(game.playerList.begin(),game.playerList.end(),[&](Player& player){
+        if(player.getPlayStatus()==Gaming && !player.isDie()){
+            list.append(player.getId());
+        }
+    });
+    return list;
+}
 Json::Value Controller::playerInfo(){
     Json::Value players;
     std::for_each(game.playerList.begin(),game.playerList.end(),[&](Player& player){
@@ -287,46 +340,7 @@ Json::Value Controller::getMission(Player& player){
     });
     return out;
 }
-//header 33
-Json::Value Controller::death(int id){
+Json::Value Controller::votingCheck(){
     Json::Value out;
-    Json::Value toAll;
-    toAll[Header]=33;
-    toAll[Content]["id"]=id;
-    out["toAll"]=toAll;
     return out;
-}
-//Header 100
-Json::Value Controller::gameEnd(Team team,int id){
-    Json::Value toAll;
-    toAll[Header]=100;
-    if(team==PoolC){
-        toAll[Content]["victory"]=0;
-        toAll[Content]["players"]=teamPlayers(PoolC);
-    }else if(team==Morgo){
-        toAll[Content]["victory"]=1;
-        toAll[Content]["players"]=teamPlayers(Morgo);
-    }else{
-        toAll[Content]["victory"]=2;
-        toAll[Content]["players"].append(id);
-    }
-    return toAll;
-}
-Json::Value Controller::teamPlayers(Team team){
-    Json::Value out;
-    std::for_each(game.playerList.begin(),game.playerList.end(),[&](Player& player){
-        if(player.getTeam()==team){
-            out.append(player.getId());
-        }
-    });
-    return out;
-}
-Json::Value Controller::deadList(){
-    Json::Value list;
-    std::for_each(game.playerList.begin(),game.playerList.end(),[&](Player& player){
-        if(player.getPlayStatus()==Gaming && !player.isDie()){
-            list.append(player.getId());
-        }
-    });
-    return list;
 }

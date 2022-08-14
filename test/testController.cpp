@@ -429,24 +429,24 @@ TEST(HEADER,90_player_mute){
     EXPECT_EQ(controller.control("{\"Header\":90,\"Content\":{\"id\":"+to_string(id1)+",\"muteOn\":true}}",0),out);
 }
 
-void thread1(){
-    int count=10;
-    Controller controller;
-    int id1=controller.game.joinPlayer("YM",1);
-    int id2=controller.game.joinPlayer("SH",2);
-    int id3=controller.game.joinPlayer("SJ",3);
-    controller.game.findPlayer(id1).setPosition(1.1,4.3);
-    controller.game.findPlayer(id2).setPosition(1.3,6.3);
-    controller.game.findPlayer(id3).setPosition(1.5,10.3);
-    while(count){
-        usleep(166666);
-        controller.game.findPlayer(id1).setPosition(count+1,4.3);
-        controller.game.findPlayer(id2).setPosition(count+2,6.3);
-        controller.game.findPlayer(id3).setPosition(count+3,10.3);
-        cout<<controller.positions().toStyledString()<<endl;
-        count--;
-    }
-}
+// void thread1(){
+//     int count=10;
+//     Controller controller;
+//     int id1=controller.game.joinPlayer("YM",1);
+//     int id2=controller.game.joinPlayer("SH",2);
+//     int id3=controller.game.joinPlayer("SJ",3);
+//     controller.game.findPlayer(id1).setPosition(1.1,4.3);
+//     controller.game.findPlayer(id2).setPosition(1.3,6.3);
+//     controller.game.findPlayer(id3).setPosition(1.5,10.3);
+//     while(count){
+//         usleep(166666);
+//         controller.game.findPlayer(id1).setPosition(count+1,4.3);
+//         controller.game.findPlayer(id2).setPosition(count+2,6.3);
+//         controller.game.findPlayer(id3).setPosition(count+3,10.3);
+//         cout<<controller.positions().toStyledString()<<endl;
+//         count--;
+//     }
+// }
 
 int main(int argc, char **argv){
     ::testing::InitGoogleTest(&argc, argv);

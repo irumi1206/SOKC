@@ -18,6 +18,15 @@ Game::Game(int i){
 int Game::getId(){
     return this->id;
 }
+
+int Game::getHost(){
+    return hostId;
+}
+
+void Game::setHost(int id){
+    this->hostId=id;
+}
+
 //roop문으로 플레이어 찾은 후 레퍼런스로 가져오기
 Player& Game::findPlayer(int playerId){
     for(int i=0; i<playerList.size();i++){
@@ -39,19 +48,15 @@ int Game::deletePlayer(int playerId){
     }
     return 0;
 }
-//플레이어 참가, 아이디는 랜덤으로 배정해줌
-int Game::joinPlayer(std::string name){
+//플레이어 참가, 아이디는 tcp의 index로 지정해줌
+int Game::joinPlayer(std::string name,int clientIndex){
     int result=1;
-    int id;
-    while(result){
-        result=0;
-        id=this->id*100+rand()%100;
-        std::for_each(playerList.begin(), playerList.end(), [&](Player& player){
-            if(player.getId()==id){
-                result=1;
-            }
-        });
-    }
+    int id=10000+clientIndex;
+    // std::for_each(playerList.begin(), playerList.end(), [&](Player& player){
+    //     if(player.getId()==id){
+    //         result=0;
+    //     }
+    // });
     Player tempPlayer=Player(id,name);
     tempPlayer.setColor(emptyColor());
     if(playerList.size()==0){
@@ -59,19 +64,6 @@ int Game::joinPlayer(std::string name){
     }
     playerList.push_back(tempPlayer);
     return id;
-}
-//플레이어 참가, id를 임의적으로 할당할 때 사용
-int Game::joinPlayer(int id,std::string name){
-    int result=1;
-    std::for_each(playerList.begin(), playerList.end(), [&](Player& player){
-        if(player.getId()==id){
-            result=0;
-        }
-    });
-    if(result){
-        playerList.push_back(Player(id,name));
-    }
-    return result;
 }
 //플레이어 참가, input을 player로 받을 경우(사용하지 않음)
 int Game::joinPlayer(Player playerIn){
@@ -132,16 +124,6 @@ void Game::assignRole(){
         i++;
     }
 }
-
-// std::vector<int> Game::getPoolc(){
-//     return poolcList;
-// }
-// std::vector<int> Game::getMolgo(){
-//     return molgoList;
-// }
-// std::vector<int> Game::getMid(){
-//     return midList;
-// }
 
 void Game::setMolgoCount(int molgo){
     this->molgoCount=molgo;

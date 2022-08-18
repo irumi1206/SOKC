@@ -125,54 +125,124 @@ TEST(HEADER,6_ready){
     EXPECT_EQ(controller.control("{\"Header\":6,\"Content\":{\"id\":"+to_string(id)+",\"readyOn\":false}}",0),out);
 }
 
-TEST(HEADER,8_host_game_setting){
+TEST(HEADER,8_host_count_game_setting){
     Controller controller=Controller();
-    int id=controller.game.joinPlayer("YM",1);
-    int id1=controller.game.joinPlayer("1",2);
-    int id2=controller.game.joinPlayer("2",3);
-    int id3=controller.game.joinPlayer("3",4);
-    Json::Value out;
     Json::Value other;
-    other["Header"]=8;
-    other["Content"]["morgoCount"]=1;
-    other["Content"]["ysfbcCount"]=1;
-    other["Content"]["missionCount"]=1;
-    out["other"].append(other);
-    EXPECT_EQ(controller.control("{\"Header\":8,\"Content\":{\"morgoCount\":1,\"ysfbcCount\":1,\"missionCount\":1}}",0),out);
-}
-
-TEST(HEADER,9_get_game_setting){
-    Controller controller=Controller();
-    int id=controller.game.joinPlayer("YM",1);
-    int id1=controller.game.joinPlayer("1",2);
-    int id2=controller.game.joinPlayer("2",3);
-    int id3=controller.game.joinPlayer("3",4);
     Json::Value out;
-    Json::Value toOne;
-    Json::Value toOne1;
-    toOne["Header"]=9;
-    toOne["Content"]["morgoCount"]=1;
-    toOne["Content"]["ysfbcCount"]=1;
-    toOne["Content"]["missionCount"]=1;
-    out["toOne"].append(toOne);
-    controller.control("{\"Header\":8,\"Content\":{\"morgoCount\":1,\"ysfbcCount\":1,\"missionCount\":1}}",0);
-    EXPECT_EQ(controller.control("{\"Header\":9}",0),out);
-    toOne1["Header"]=9;
-    toOne1["Content"]["morgoCount"]=2;
-    toOne1["Content"]["ysfbcCount"]=2;
-    toOne1["Content"]["missionCount"]=2;
-    out["toOne"][0]=toOne1;
-    controller.control("{\"Header\":8,\"Content\":{\"morgoCount\":2,\"ysfbcCount\":2,\"missionCount\":2}}",0);
-    EXPECT_EQ(controller.control("{\"Header\":9}",0),out);
-
+    other["Header"]=8;
+    other["Content"]["poolCCount"]=3;
+    other["Content"]["morgoCount"]=2;
+    other["Content"]["ysfbcCount"]=1;
+    out["other"].append(other);
+    EXPECT_EQ(controller.control("{\"Header\":8,\"Content\":{\"poolCCount\":3,\"morgoCount\":2,\"ysfbcCount\":1}}",0),out);
 }
 
-TEST(HEADER,10_game_start){
+TEST(HEADER,9_host_cooltime_setting){
     Controller controller=Controller();
-    controller.control("{\"Header\":8,\"Content\":{\"morgoCount\":1,\"ysfbcCount\":1,\"missionCount\":1}}",0);
-    int id1=controller.game.joinPlayer("YM",1);
-    int id2=controller.game.joinPlayer("SH",2);
-    int id3=controller.game.joinPlayer("SJ",3);
+    Json::Value other;
+    Json::Value out;
+    other["Header"]=9;
+    other["Content"]["killCool"]=20;
+    other["Content"]["conferenceCool"]=30;
+    other["Content"]["discussion"]=20;
+    other["Content"]["voting"]=40;
+    out["other"].append(other);
+    EXPECT_EQ(controller.control("{\"Header\":9,\"Content\":{\"killCool\":20,\"conferenceCool\":30,\"discussion\":20,\"voting\":40}}",0),out);
+}
+
+TEST(HEADER,10_role_setting){
+    Controller controller=Controller();
+    Json::Value other;
+    Json::Value out;
+    other["Header"]=10;
+    other["Content"]["roleFlag"]=3;
+    other["Content"]["state"]=false;
+    out["other"].append(other);
+    EXPECT_EQ(controller.control("{\"Header\":10,\"Content\":{\"roleFlag\":3,\"state\":false}}",0),out);
+    vector<int> temp = controller.game.gameSetting.getPoolc();
+    vector<int> temp2 = {1,2,4,5,6,7};
+    EXPECT_EQ(temp,temp2);
+}
+
+TEST(HEADER,11_get_game_setting){
+    Controller controller=Controller();
+    Json::Value toOne;
+    Json::Value out;
+    toOne["Header"]=11;
+    toOne["Content"]["sideCount"]["poolCCount"]=5;
+    toOne["Content"]["sideCount"]["morgoCount"]=1;
+    toOne["Content"]["sideCount"]["ysfbcCount"]=0;
+
+    toOne["Content"]["coolTime"]["killCoolTime"]=20;
+    toOne["Content"]["coolTime"]["conferenceCoolTime"]=30;
+    toOne["Content"]["coolTime"]["discussionTime"]=20;
+    toOne["Content"]["coolTime"]["votingTime"]=40;
+    Json::Value role;
+    role["roleFlag"]=1;
+    role["state"]=true;
+    toOne["Content"]["roleIn"].append(role);
+    role["roleFlag"]=2;
+    role["state"]=true;
+    toOne["Content"]["roleIn"].append(role);
+    role["roleFlag"]=3;
+    role["state"]=false;
+    toOne["Content"]["roleIn"].append(role);
+    role["roleFlag"]=4;
+    role["state"]=true;
+    toOne["Content"]["roleIn"].append(role);
+    role["roleFlag"]=5;
+    role["state"]=true;
+    toOne["Content"]["roleIn"].append(role);
+    role["roleFlag"]=6;
+    role["state"]=false;
+    toOne["Content"]["roleIn"].append(role);
+    role["roleFlag"]=7;
+    role["state"]=true;
+    toOne["Content"]["roleIn"].append(role);
+
+    role["roleFlag"]=21;
+    role["state"]=true;
+    toOne["Content"]["roleIn"].append(role);
+    role["roleFlag"]=22;
+    role["state"]=true;
+    toOne["Content"]["roleIn"].append(role);
+    role["roleFlag"]=23;
+    role["state"]=true;
+    toOne["Content"]["roleIn"].append(role);
+    role["roleFlag"]=24;
+    role["state"]=false;
+    toOne["Content"]["roleIn"].append(role);
+
+    role["roleFlag"]=41;
+    role["state"]=false;
+    toOne["Content"]["roleIn"].append(role);
+
+    controller.control("{\"Header\":10,\"Content\":{\"roleFlag\":1,\"state\":true}}",0);
+    controller.control("{\"Header\":10,\"Content\":{\"roleFlag\":2,\"state\":true}}",0);
+    controller.control("{\"Header\":10,\"Content\":{\"roleFlag\":3,\"state\":false}}",0);
+    controller.control("{\"Header\":10,\"Content\":{\"roleFlag\":4,\"state\":true}}",0);
+    controller.control("{\"Header\":10,\"Content\":{\"roleFlag\":5,\"state\":true}}",0);
+    controller.control("{\"Header\":10,\"Content\":{\"roleFlag\":6,\"state\":false}}",0);
+    controller.control("{\"Header\":10,\"Content\":{\"roleFlag\":7,\"state\":true}}",0);
+
+    controller.control("{\"Header\":10,\"Content\":{\"roleFlag\":21,\"state\":true}}",0);
+    controller.control("{\"Header\":10,\"Content\":{\"roleFlag\":22,\"state\":true}}",0);
+    controller.control("{\"Header\":10,\"Content\":{\"roleFlag\":23,\"state\":true}}",0);
+    controller.control("{\"Header\":10,\"Content\":{\"roleFlag\":24,\"state\":false}}",0);
+
+    controller.control("{\"Header\":10,\"Content\":{\"roleFlag\":41,\"state\":false}}",0);
+
+    controller.control("{\"Header\":8,\"Content\":{\"poolCCount\":5,\"morgoCount\":1,\"ysfbcCount\":0}}",0);
+    controller.control("{\"Header\":9,\"Content\":{\"killCool\":20,\"conferenceCool\":30,\"discussion\":20,\"voting\":40}}",0);
+
+    out["toOne"].append(toOne);
+    EXPECT_EQ(controller.control("{\"Header\":11}",0),out);
+}
+
+TEST(HEADER,15_game_start){
+    Controller controller=Controller();
+    
+
 }
 
 TEST(HEADER,20_voting_call){

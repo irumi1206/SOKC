@@ -91,8 +91,8 @@ std::vector<Player> Game::getPlayers(){
 void Game::assignRole(){
 
     int playercount=countPlayers();
-    int morgoCount = this->gameSetting.morgoCount;
-    int midCount = this->gameSetting.midCount;
+    int morgoCount = getMorgoCount();
+    int midCount = getMidCount();
     int poolcCount=playercount-morgoCount-midCount;
 
     std::vector<int> poolcAbility=gameSetting.getPoolc();
@@ -128,18 +128,7 @@ void Game::assignRole(){
     }
 }
 
-void Game::setMorgoCount(int morgo){
-    this->gameSetting.setMorgoCount(morgo);
-}
-void Game::setMidCount(int mid){
-    this->gameSetting.setMidCount(mid);
-}
-int Game::getMorgoCount(){
-    return this->gameSetting.getMorgoCount();
-}
-int Game::getMidCount(){
-    return this->midCount;
-}
+
 int Game::emptyColor(){
     int result=1;
     int i=1;
@@ -155,19 +144,14 @@ int Game::emptyColor(){
     return i;
 }
 
-void Game::setMissionCount(int missionCount){
-    this->missionCount=missionCount;
-}
-int Game::getMissionCount(){
-    return this->missionCount;
-}
+
 
 void Game::gameStart(){
     assignRole();
     std::for_each(playerList.begin(),playerList.end(),[&](Player& player){
         player.live();
         player.setStatus(Gaming);
-        player.assignMission(missionCount);
+        player.assignMission(getMissionCount());
     });
 }
 //투표
@@ -212,4 +196,66 @@ int Game::calculateVoteDead(){
 bool Game::checkEnd(){
     return false;
     //추가 해야 함.
+}
+
+
+//게임 설정 (count)
+void Game::setMorgoCount(int morgo){
+    this->gameSetting.setMorgoCount(morgo);
+}
+void Game::setMidCount(int mid){
+    this->gameSetting.setMidCount(mid);
+}
+void Game::setPoolcCount(int count){
+    this->gameSetting.setPoolcCount(count);
+}
+
+int Game::getPoolcCount(){
+    return this->gameSetting.getPoolcCount();
+}
+
+int Game::getMorgoCount(){
+    return this->gameSetting.getMorgoCount();
+}
+
+int Game::getMidCount(){
+    return this->gameSetting.getMidCount();
+}
+
+int Game::getMissionCount(){
+    return this->gameSetting.getMissionCount();
+}
+//게임 설정 (cooltime)
+void Game::setKillCoolTime(int time){
+    this->gameSetting.setKillCoolTime(time);
+}
+void Game::setConferenceCoolTime(int time){
+    this->gameSetting.setConferenceCoolTime(time);
+}
+void Game::setVotingTime(int time){
+    this->gameSetting.setVotingTime(time);
+}
+void Game::setDiscussionTime(int time){
+    this->gameSetting.setDiscussionTime(time);
+}
+
+int Game::getKillCoolTime(){
+    return this->gameSetting.getKillCoolTime();
+}
+int Game::getConferenceCoolTime(){
+    return this->gameSetting.getConferenceCoolTime();
+}
+int Game::getVotingTime(){
+    return this->gameSetting.getVotingTime();
+}
+int Game::getDiscussionTime(){
+    return this->gameSetting.getDiscussionTime();
+}
+
+//게임 설정 (직업)
+void Game::setRoleSettingChange(int id, bool set){
+    this->gameSetting.setRoleSetting(id,set);
+}
+std::vector<std::map<int,bool>> Game::getRoleSettingChange(){
+    return this->gameSetting.getRoleSetting();
 }

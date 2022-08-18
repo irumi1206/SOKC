@@ -66,6 +66,27 @@ TEST(role_test,assign_Role){
     EXPECT_EQ(mid, 1);
 }
 
+TEST(settings,count){
+    Game game = Game();
+    game.setMorgoCount(2);
+    game.setMidCount(1);
+    EXPECT_EQ(game.getMorgoCount(),2);
+    EXPECT_EQ(game.getMidCount(),1);
+    EXPECT_EQ(game.getMissionCount(),1);
+}
+
+TEST(settings,cooltime){
+    Game game = Game();
+    game.setKillCoolTime(30);
+    game.setConferenceCoolTime(20);
+    game.setDiscussionTime(20);
+    game.setVotingTime(40);
+    EXPECT_EQ(game.getKillCoolTime(),30);
+    EXPECT_EQ(game.getConferenceCoolTime(),20);
+    EXPECT_EQ(game.getDiscussionTime(),20);
+    EXPECT_EQ(game.getVotingTime(),40);
+}
+
 TEST(color_test,assign_color_auto){
     Game game=Game();
     int id1=game.joinPlayer("player1",1);

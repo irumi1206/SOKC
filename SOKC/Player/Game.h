@@ -15,7 +15,6 @@ public:
     int id;//방 id
     std::vector<Player> playerList;//방에 참여해 있는 플레이어들을 담는 구조체
     int hostId;
-
     //투표 추가
     std::vector<VotingStatus> voteStorage;
     void clearVoteStorage();
@@ -56,12 +55,30 @@ public:
     
     //플레이어 리스트를 벡터로 받아오는 함수
     std::vector<Player> getPlayers();
+    //게임 설정 (count)
     void setMorgoCount(int morgo);
     void setMidCount(int mid);
-    void setMissionCount(int missionCount);
+    void setPoolcCount(int count);
+    int getPoolcCount();
     int getMorgoCount();
     int getMidCount();
     int getMissionCount();
+
+    //게임 설정 (cooltime)
+    void setKillCoolTime(int time);
+    void setConferenceCoolTime(int time);
+    void setVotingTime(int time);
+    void setDiscussionTime(int time);
+    
+    int getKillCoolTime();
+    int getConferenceCoolTime();
+    int getVotingTime();
+    int getDiscussionTime();
+
+    //게임 설정(직업)
+    void setRoleSettingChange(int id, bool set);
+    std::vector<std::map<int,bool>> getRoleSettingChange();
+
     void assignRole();
     // std::vector<int> getPoolc();
     // std::vector<int> getMolgo();

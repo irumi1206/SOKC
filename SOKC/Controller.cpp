@@ -91,45 +91,74 @@ Json::Value Controller::control(std::string in, int clientIndex){
             out["toAll"].append(data);
             return out;
         }
-        //호스트가 게임 설정
+        //count 게임 설정값 변경
         case 8:
         {
+            if(data[Content]["poolCCount"]!=null){
+                game.setPoolcCount(data[Content]["poolCCount"].asInt());
+            }
             if(data[Content]["morgoCount"]!=null){
                 game.setMorgoCount(data[Content]["morgoCount"].asInt());
             }
             if(data[Content]["ysfbcCount"]!=null){
                 game.setMidCount(data[Content]["ysfbcCount"].asInt());
             }
-            if(data[Content]["missionCount"]!=null){
-                game.setMissionCount(data[Content]["missionCount"].asInt());
-            }
             other[Header]=8;
+            other[Content]["poolCCount"]=game.getPoolcCount();
             other[Content]["morgoCount"]=game.getMorgoCount();
             other[Content]["ysfbcCount"]=game.getMidCount();
-            other[Content]["missionCount"]=game.getMissionCount();
             out["other"].append(other);
             return out;
         }
-        //게임 설정 가져오기
+        //cooltime 게임 설정값 변경
         case 9:
         {
-            toOne[Header]=9;
-            toOne[Content]["morgoCount"]=game.getMorgoCount();
-            toOne[Content]["ysfbcCount"]=game.getMidCount();
-            toOne[Content]["missionCount"]=game.getMissionCount();
+            game.setKillCoolTime(data[Content]["killCool"].asInt());
+            game.setConferenceCoolTime(data[Content]["conferenceCool"].asInt());
+            game.setDiscussionTime(data[Content]["discussion"].asInt());
+            game.setVotingTime(data[Content]["voting"].asInt());
+            
+            other[Header]=9;
+            other[Content]["killCool"]=game.getKillCoolTime();
+            other[Content]["conferenceCool"]=game.getConferenceCoolTime();
+            other[Content]["discussion"]=game.getDiscussionTime();
+            other[Content]["voting"]=game.getVotingTime();
+            out["other"].append(other);
+            return out;
+        }
+        //직업 설정값 변경
+        case 10:
+        {
+            game.setRoleSettingChange(data[Content]["roleFlag"].asInt(),data[Content]["state"].asBool());
+            out["other"].append(data);
+            return out;
+        }
+        //게임 설정 가져오기
+        case 11:
+        {
+            toOne[Header]=11;
+            toOne[Content]["sideCount"]["poolCCount"]=game.getPoolcCount();
+            toOne[Content]["sideCount"]["morgoCount"]=game.getMorgoCount();
+            toOne[Content]["sideCount"]["ysfbcCount"]=game.getMidCount();
+            
+            toOne[Content]["coolTime"]["killCoolTime"]=game.getKillCoolTime();
+            toOne[Content]["coolTime"]["conferenceCoolTime"]=game.getConferenceCoolTime();
+            toOne[Content]["coolTime"]["discussionTime"]=game.getDiscussionTime();
+            toOne[Content]["coolTime"]["votingTime"]=game.getVotingTime();
+
+            toOne[Content]["roleIn"]=roleSetting();
             out["toOne"].append(toOne);
             return out;
         }
         //게임 시작
-        case 10:
+        case 15:
         {
             game.gameStart();
             Json::Value each;
             std::for_each(game.playerList.begin(),game.playerList.end(),[&](Player& player){
                 each["recver"]=player.getId();
-                each["data"][Header]=10;
+                each["data"][Header]=15;
                 each["data"][Content]["roleFlag"]=player.getRole();
-                each["data"][Content]["missions"]=getMission(player);
             });
             out["toEach"].append(each);
             return out;
@@ -244,9 +273,10 @@ Json::Value Controller::setHost(int id){
     toAll[Content]["id"]=id;
     return toAll;
 }
-//Header 11
+//Header 16 라운드 시작, 구현 필요, 미션 할당
 Json::Value Controller::roundStart(){
     Json::Value each;
+    //each["data"][Content]["missions"]=getMission(player);
     return each;
 }
 //Header 31
@@ -347,5 +377,21 @@ Json::Value Controller::getMission(Player& player){
 }
 Json::Value Controller::votingCheck(){
     Json::Value out;
+    return out;
+}
+
+Json::Value Controller::roleSetting(){
+    Json::Value out;
+    std::vector<std::map<int,bool>> settings= game.gameSetting.getRoleSetting();
+    for(int i=0;i<3;i++){
+        std::map<int,bool> setting=settings[i];
+        for (const auto & [key, value] : setting) {
+            Json::Value role;
+            role["roleFlag"]=key;
+            role["state"]=value;
+            out.append(role);
+        }
+    }
+    
     return out;
 }

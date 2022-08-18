@@ -36,6 +36,9 @@ public:
     Json::Value deadList();
     //투표 끝났는지 확인
     Json::Value votingCheck();
+    Json::Value roleSetting();
+
+    
     
 };
 

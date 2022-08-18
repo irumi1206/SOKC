@@ -65,6 +65,8 @@ public: //position
     void setPosition(float x,float y);
     //위치값을 tuple로 받기
     std::tuple<float,float> getPosition();
+    //시작위치 랜덤 지정
+    void randomPosition();
 public: //score
     //killscore추가
     void addKillScore(int scores);

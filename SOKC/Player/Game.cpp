@@ -91,10 +91,13 @@ std::vector<Player> Game::getPlayers(){
 void Game::assignRole(){
 
     int playercount=countPlayers();
-    int poolcCount=playercount-molgoCount-midCount;
-    std::vector<int> poolcAbility={1,2,3,4,5,6,7,8,9,10};
-    std::vector<int> molgoAbility={20,21,22,23,24,25,26,27};
-    std::vector<int> midAbility={40,41,42,43,44,45};
+    int morgoCount = this->gameSetting.morgoCount;
+    int midCount = this->gameSetting.midCount;
+    int poolcCount=playercount-morgoCount-midCount;
+
+    std::vector<int> poolcAbility=gameSetting.getPoolc();
+    std::vector<int> morgoAbility=gameSetting.getMorgo();
+    std::vector<int> midAbility=gameSetting.getMid();
     
     srand(time(NULL));
     int i=0;
@@ -107,12 +110,12 @@ void Game::assignRole(){
             playerList[i].setRole(poolcAbility[temp2]);
             poolcAbility.erase(poolcAbility.begin()+temp2);
             poolcCount-=1;
-        }else if(temp<poolcCount+molgoCount){
-            int molgoAbilitySize=molgoAbility.size();
-            temp2=rand()%molgoAbilitySize;
-            playerList[i].setRole(molgoAbility[temp2]);
-            molgoAbility.erase(molgoAbility.begin()+temp2);
-            molgoCount-=1;
+        }else if(temp<poolcCount+morgoCount){
+            int morgoAbilitySize=morgoAbility.size();
+            temp2=rand()%morgoAbilitySize;
+            playerList[i].setRole(morgoAbility[temp2]);
+            morgoAbility.erase(morgoAbility.begin()+temp2);
+            morgoCount-=1;
         }else{
             int midAbilitySize=midAbility.size();
             temp2=rand()%midAbilitySize;
@@ -125,14 +128,14 @@ void Game::assignRole(){
     }
 }
 
-void Game::setMolgoCount(int molgo){
-    this->molgoCount=molgo;
+void Game::setMorgoCount(int morgo){
+    this->gameSetting.setMorgoCount(morgo);
 }
 void Game::setMidCount(int mid){
-    this->midCount=mid;
+    this->gameSetting.setMidCount(mid);
 }
-int Game::getMolgoCount(){
-    return this->molgoCount;
+int Game::getMorgoCount(){
+    return this->gameSetting.getMorgoCount();
 }
 int Game::getMidCount(){
     return this->midCount;

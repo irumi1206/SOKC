@@ -6,8 +6,9 @@
 #include <sys/socket.h> 
 #include <arpa/inet.h> 
 #include <netinet/in.h> 
+#include <iostream>
     
-#define PORT     8080 
+#define PORT     8079 
 #define MAXLINE 1024 
     
 // Driver code 
@@ -15,7 +16,9 @@ int main() {
     int sockfd; 
     char buffer[MAXLINE]; 
     char *hello = "Hello from client"; 
-    struct sockaddr_in     servaddr; 
+    struct sockaddr_in servaddr;
+    struct sockaddr_in clientAddress;
+    unsigned int l=sizeof(clientAddress);
     
     // Creating socket file descriptor 
     if ( (sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0 ) { 
@@ -31,18 +34,33 @@ int main() {
     servaddr.sin_addr.s_addr = INADDR_ANY; 
         
     unsigned int n, len; 
+
+    while(1){
+        char inp[1024]={0};
+        char out[1024]={0};
+        //char8_t buffer[1024] = { 0 };
+        std::cin.getline(inp, 1024);
+        sendto(sockfd, inp, strlen(inp), 0,(const struct sockaddr *) &servaddr,  
+            sizeof(servaddr));
+
+        int n=recvfrom(sockfd, out, 1024, MSG_WAITALL, (struct sockaddr *) &clientAddress,&l);
+        printf("%s\n",out);
+        std::cout<<ntohs(clientAddress.sin_port);
+        //valread = read(sock, buffer, 1024);
+        printf("%s\n", inp);
+    }
         
-    sendto(sockfd, (const char *)hello, strlen(hello), 
-        MSG_CONFIRM, (const struct sockaddr *) &servaddr,  
-            sizeof(servaddr)); 
-    printf("Hello message sent.\n"); 
+    // sendto(sockfd, (const char *)hello, strlen(hello), 
+    //     MSG_CONFIRM, (const struct sockaddr *) &servaddr,  
+    //         sizeof(servaddr)); 
+    // printf("Hello message sent.\n"); 
             
-    n = recvfrom(sockfd, (char *)buffer, MAXLINE,  
-                MSG_WAITALL, (struct sockaddr *) &servaddr, 
-                &len); 
-    buffer[n] = '\0'; 
-    printf("Server : %s\n", buffer); 
+    // n = recvfrom(sockfd, (char *)buffer, MAXLINE,  
+    //             MSG_WAITALL, (struct sockaddr *) &servaddr, 
+    //             &len); 
+    // buffer[n] = '\0'; 
+    // printf("Server : %s\n", buffer); 
     
-    close(sockfd); 
+    // close(sockfd); 
     return 0; 
 }

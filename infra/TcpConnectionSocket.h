@@ -5,7 +5,7 @@
 #include "TcpConnection.h"
 
 class TcpConnectionSocket{
-    private :
+    public :
         int port;
         int initialSocketDescriptor;
         struct sockaddr_in serverAddress;

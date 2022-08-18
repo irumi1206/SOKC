@@ -22,6 +22,8 @@ public:
     Json::Value getMission(Player& player);
     //Header 7
     Json::Value setHost(int id);
+    //Header 11
+    Json::Value roundStart();
     //Header 33
     Json::Value death(int id);
     //Header 35

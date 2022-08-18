@@ -81,6 +81,9 @@ void Player::setPosition(float x,float y){
 std::tuple<float,float> Player::getPosition(){
     return std::make_tuple(position.x,position.y);
 };
+void Player::randomPosition(){
+    this->position.randomPosition(this->id);
+}
 //killscore추가
 void Player::addKillScore(int scores){
     this->score.addKill(scores);

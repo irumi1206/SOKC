@@ -7,15 +7,14 @@
 #include <cstdlib>
 #include "VotingStatus.h"
 #include <map>
+#include "gameSetting/GameSetting.h"
 
 class Game{
 public: 
+    GameSetting gameSetting;
     int id;//방 id
     std::vector<Player> playerList;//방에 참여해 있는 플레이어들을 담는 구조체
     int hostId;
-    int molgoCount=2;
-    int midCount=2;
-    int missionCount=3;
 
     //투표 추가
     std::vector<VotingStatus> voteStorage;
@@ -57,10 +56,10 @@ public:
     
     //플레이어 리스트를 벡터로 받아오는 함수
     std::vector<Player> getPlayers();
-    void setMolgoCount(int molgo);
+    void setMorgoCount(int morgo);
     void setMidCount(int mid);
     void setMissionCount(int missionCount);
-    int getMolgoCount();
+    int getMorgoCount();
     int getMidCount();
     int getMissionCount();
     void assignRole();

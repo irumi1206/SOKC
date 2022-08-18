@@ -6,6 +6,7 @@
 #include <sys/socket.h> 
 #include <arpa/inet.h> 
 #include <netinet/in.h> 
+#include <iostream>
     
 #define PORT     8080 
 #define MAXLINE 1024 
@@ -40,18 +41,28 @@ int main() {
     } 
         
     unsigned int len, n; 
-    
-    len = sizeof(cliaddr);  //len is value/result 
-    
-    n = recvfrom(sockfd, (char *)buffer, MAXLINE,  
+    len = sizeof(cliaddr);
+
+    while(1){
+        n = recvfrom(sockfd, (char *)buffer, MAXLINE,  
                 MSG_WAITALL, ( struct sockaddr *) &cliaddr, 
                 &len); 
     buffer[n] = '\0'; 
-    printf("Client : %s\n", buffer); 
-    sendto(sockfd, (const char *)hello, strlen(hello),  
-        MSG_CONFIRM, (const struct sockaddr *) &cliaddr, 
-            len); 
-    printf("Hello message sent.\n");  
+        std::cout<<inet_ntoa(cliaddr.sin_addr);
+    printf("Client : %s\n", buffer);
+    }
+    
+    // len = sizeof(cliaddr);  //len is value/result 
+    
+    // n = recvfrom(sockfd, (char *)buffer, MAXLINE,  
+    //             MSG_WAITALL, ( struct sockaddr *) &cliaddr, 
+    //             &len); 
+    // buffer[n] = '\0'; 
+    // printf("Client : %s\n", buffer); 
+    // sendto(sockfd, (const char *)hello, strlen(hello),  
+    //     MSG_CONFIRM, (const struct sockaddr *) &cliaddr, 
+    //         len); 
+    // printf("Hello message sent.\n");  
         
     return 0; 
 }

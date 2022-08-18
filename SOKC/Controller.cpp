@@ -94,8 +94,8 @@ Json::Value Controller::control(std::string in, int clientIndex){
         //호스트가 게임 설정
         case 8:
         {
-            if(data[Content]["molgoCount"]!=null){
-                game.setMolgoCount(data[Content]["molgoCount"].asInt());
+            if(data[Content]["morgoCount"]!=null){
+                game.setMorgoCount(data[Content]["morgoCount"].asInt());
             }
             if(data[Content]["ysfbcCount"]!=null){
                 game.setMidCount(data[Content]["ysfbcCount"].asInt());
@@ -104,7 +104,7 @@ Json::Value Controller::control(std::string in, int clientIndex){
                 game.setMissionCount(data[Content]["missionCount"].asInt());
             }
             other[Header]=8;
-            other[Content]["molgoCount"]=game.getMolgoCount();
+            other[Content]["morgoCount"]=game.getMorgoCount();
             other[Content]["ysfbcCount"]=game.getMidCount();
             other[Content]["missionCount"]=game.getMissionCount();
             out["other"].append(other);
@@ -114,7 +114,7 @@ Json::Value Controller::control(std::string in, int clientIndex){
         case 9:
         {
             toOne[Header]=9;
-            toOne[Content]["molgoCount"]=game.getMolgoCount();
+            toOne[Content]["morgoCount"]=game.getMorgoCount();
             toOne[Content]["ysfbcCount"]=game.getMidCount();
             toOne[Content]["missionCount"]=game.getMissionCount();
             out["toOne"].append(toOne);
@@ -217,7 +217,7 @@ Json::Value Controller::control(std::string in, int clientIndex){
         //능력 사용
         case 40:
         {
-
+            
         }
         //베네핏 사용
         case 60:
@@ -243,6 +243,11 @@ Json::Value Controller::setHost(int id){
     toAll[Header]=7;
     toAll[Content]["id"]=id;
     return toAll;
+}
+//Header 11
+Json::Value Controller::roundStart(){
+    Json::Value each;
+    return each;
 }
 //Header 31
 Json::Value Controller::positions(){

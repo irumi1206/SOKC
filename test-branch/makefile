@@ -1,7 +1,7 @@
 
 
-SOKC_PATH = /home/ubuntu/GameProject/SOKC
-TEST_PATH = /home/ubuntu/GameProject/test
+SOKC_PATH = /home/ubuntu/GameProject/SOKC-branch
+TEST_PATH = /home/ubuntu/GameProject/test-branch
 GTEST_DIR = googletest/googletest
 PLAYER = Mission.o Player.o Position.o Role.o Score.o
 
@@ -33,9 +33,6 @@ controller.o:
 jsonparser.o:
 	g++ -std=c++2a -c $(SOKC_PATH)/jsonParser/JsonParser.cpp
 
-gameSetting.o:
-	g++ -std=c++2a -c $(SOKC_PATH)/Player/gameSetting/GameSetting.cpp
-
 
 compile : 
 	make mission.o
@@ -47,29 +44,28 @@ compile :
 	make controller.o
 	make jsonparser.o
 	make votingStatus.o
-	make gameSetting.o
 
-test : mission.o position.o role.o score.o player.o game.o controller.o jsonparser.o votingStatus.o gameSetting.o
+test : mission.o position.o role.o score.o player.o game.o controller.o jsonparser.o votingStatus.o
 	make testController.o
 	make testGame.o
 	make testPlayer.o
 	./ControllerTest
 	./PlayerTest
 	./GameTest
-testController.o : VotingStatus.o Mission.o Player.o Position.o Role.o Score.o Controller.o JsonParser.o Game.o gameSetting.o
-	g++ $(TEST_PATH)/testController.cpp $(PLAYER) VotingStatus.o Controller.o JsonParser.o Game.o GameSetting.o -o ControllerTest -ljsoncpp -isystem ${GTEST_DIR}/include -L${GTEST_DIR}/build -pthread -lgtest
+testController.o : VotingStatus.o Mission.o Player.o Position.o Role.o Score.o Controller.o JsonParser.o Game.o
+	g++ $(TEST_PATH)/testController.cpp $(PLAYER) VotingStatus.o Controller.o JsonParser.o Game.o -o ControllerTest -ljsoncpp -isystem ${GTEST_DIR}/include -L${GTEST_DIR}/build -pthread -lgtest
 
-testGame.o : VotingStatus.o Mission.o Player.o Position.o Role.o Score.o Game.o gameSetting.o
-	g++ $(TEST_PATH)/Player/testGame.cpp $(PLAYER) VotingStatus.o Game.o GameSetting.o -o GameTest -ljsoncpp -isystem ${GTEST_DIR}/include -L${GTEST_DIR}/build -pthread -lgtest
+testGame.o : VotingStatus.o Mission.o Player.o Position.o Role.o Score.o Game.o 
+	g++ $(TEST_PATH)/Player/testGame.cpp $(PLAYER) VotingStatus.o Game.o -o GameTest -ljsoncpp -isystem ${GTEST_DIR}/include -L${GTEST_DIR}/build -pthread -lgtest
 
 testPlayer.o : Mission.o Player.o Position.o Role.o Score.o
 	g++ $(TEST_PATH)/Player/testPlayer.cpp $(PLAYER) -o PlayerTest -ljsoncpp -isystem ${GTEST_DIR}/include -L${GTEST_DIR}/build -pthread -lgtest
 
-testController : VotingStatus.o Mission.o Player.o Position.o Role.o Score.o Controller.o JsonParser.o Game.o gameSetting.o
+testController : VotingStatus.o Mission.o Player.o Position.o Role.o Score.o Controller.o JsonParser.o Game.o
 	make testController.o
 	./ControllerTest
 
-testGame : VotingStatus.o Mission.o Player.o Position.o Role.o Score.o Game.o gameSetting.o
+testGame : VotingStatus.o Mission.o Player.o Position.o Role.o Score.o Game.o
 	make testGame.o
 	./GameTest
 
@@ -92,4 +88,3 @@ clean :
 	rm -rf ControllerTest
 	rm -rf PlayerTest
 	rm -rf GameTest
-	rm -rf GameSetting.o

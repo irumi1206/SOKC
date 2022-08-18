@@ -134,11 +134,11 @@ TEST(HEADER,8_host_game_setting){
     Json::Value out;
     Json::Value other;
     other["Header"]=8;
-    other["Content"]["molgoCount"]=1;
+    other["Content"]["morgoCount"]=1;
     other["Content"]["ysfbcCount"]=1;
     other["Content"]["missionCount"]=1;
     out["other"].append(other);
-    EXPECT_EQ(controller.control("{\"Header\":8,\"Content\":{\"molgoCount\":1,\"ysfbcCount\":1,\"missionCount\":1}}",0),out);
+    EXPECT_EQ(controller.control("{\"Header\":8,\"Content\":{\"morgoCount\":1,\"ysfbcCount\":1,\"missionCount\":1}}",0),out);
 }
 
 TEST(HEADER,9_get_game_setting){
@@ -151,25 +151,25 @@ TEST(HEADER,9_get_game_setting){
     Json::Value toOne;
     Json::Value toOne1;
     toOne["Header"]=9;
-    toOne["Content"]["molgoCount"]=1;
+    toOne["Content"]["morgoCount"]=1;
     toOne["Content"]["ysfbcCount"]=1;
     toOne["Content"]["missionCount"]=1;
     out["toOne"].append(toOne);
-    controller.control("{\"Header\":8,\"Content\":{\"molgoCount\":1,\"ysfbcCount\":1,\"missionCount\":1}}",0);
+    controller.control("{\"Header\":8,\"Content\":{\"morgoCount\":1,\"ysfbcCount\":1,\"missionCount\":1}}",0);
     EXPECT_EQ(controller.control("{\"Header\":9}",0),out);
     toOne1["Header"]=9;
-    toOne1["Content"]["molgoCount"]=2;
+    toOne1["Content"]["morgoCount"]=2;
     toOne1["Content"]["ysfbcCount"]=2;
     toOne1["Content"]["missionCount"]=2;
     out["toOne"][0]=toOne1;
-    controller.control("{\"Header\":8,\"Content\":{\"molgoCount\":2,\"ysfbcCount\":2,\"missionCount\":2}}",0);
+    controller.control("{\"Header\":8,\"Content\":{\"morgoCount\":2,\"ysfbcCount\":2,\"missionCount\":2}}",0);
     EXPECT_EQ(controller.control("{\"Header\":9}",0),out);
 
 }
 
 TEST(HEADER,10_game_start){
     Controller controller=Controller();
-    controller.control("{\"Header\":8,\"Content\":{\"molgoCount\":1,\"ysfbcCount\":1,\"missionCount\":1}}",0);
+    controller.control("{\"Header\":8,\"Content\":{\"morgoCount\":1,\"ysfbcCount\":1,\"missionCount\":1}}",0);
     int id1=controller.game.joinPlayer("YM",1);
     int id2=controller.game.joinPlayer("SH",2);
     int id3=controller.game.joinPlayer("SJ",3);
@@ -341,7 +341,7 @@ TEST(HEADER,32_kill_check){
     EXPECT_EQ(controller.game.findPlayer(id1).isDie(),false);
     EXPECT_EQ(controller.game.findPlayer(id2).isDie(),false);
     EXPECT_EQ(controller.game.findPlayer(id3).isDie(),false);
-    //different team(molgo kill poolc)
+    //different team(morgo kill poolc)
     Json::Value out;
     Json::Value toAll;
     Json::Value toAll1;
@@ -358,7 +358,7 @@ TEST(HEADER,32_kill_check){
     EXPECT_EQ(controller.control("{\"Header\":32,\"Content\":{\"id\":"+to_string(id1)+",\"victim\":"+to_string(id2)+"}}",0),out);
     EXPECT_EQ(controller.game.findPlayer(id2).isDie(),true);
     EXPECT_EQ(controller.game.findPlayer(id1).getKillScore(),1);
-    //different team(poolc kill molgo)
+    //different team(poolc kill morgo)
     toAll["Header"]=32;
     toAll["Content"]["id"]=id2;
     toAll["Content"]["victim"]=id3;
@@ -370,7 +370,7 @@ TEST(HEADER,32_kill_check){
     EXPECT_EQ(controller.control("{\"Header\":32,\"Content\":{\"id\":"+to_string(id2)+",\"victim\":"+to_string(id3)+"}}",0),out);
     EXPECT_EQ(controller.game.findPlayer(id3).isDie(),true);
     EXPECT_EQ(controller.game.findPlayer(id2).getKillScore(),1);
-    //same team(molgo kill molgo)
+    //same team(morgo kill morgo)
     toAll["Header"]=32;
     toAll["Content"]["id"]=id3;
     toAll["Content"]["victim"]=id1;

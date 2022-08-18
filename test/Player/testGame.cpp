@@ -45,9 +45,8 @@ TEST(role_test,assign_Role){
     int id5=game.joinPlayer("player5",5);
     int id6=game.joinPlayer("player6",6);
     int id7=game.joinPlayer("player7",7);
-    int id8=game.joinPlayer("player8",8);
-    game.setMolgoCount(2);
-    game.setMidCount(2);
+    game.setMorgoCount(2);
+    game.setMidCount(1);
     game.assignRole();
     vector<Player> list=game.getPlayers();
     int poolc=0;
@@ -64,7 +63,7 @@ TEST(role_test,assign_Role){
     });
     EXPECT_EQ(poolc, 4);
     EXPECT_EQ(morgo, 2);
-    EXPECT_EQ(mid, 2);
+    EXPECT_EQ(mid, 1);
 }
 
 TEST(color_test,assign_color_auto){
@@ -76,7 +75,6 @@ TEST(color_test,assign_color_auto){
     int id5=game.joinPlayer("player5",5);
     int id6=game.joinPlayer("player6",6);
     int id7=game.joinPlayer("player7",7);
-    int id8=game.joinPlayer("player8",8);
     EXPECT_EQ(game.findPlayer(id1).getColor(),2);
     EXPECT_EQ(game.findPlayer(id2).getColor(),3);
     EXPECT_EQ(game.findPlayer(id3).getColor(),4);
@@ -84,7 +82,6 @@ TEST(color_test,assign_color_auto){
     EXPECT_EQ(game.findPlayer(id5).getColor(),6);
     EXPECT_EQ(game.findPlayer(id6).getColor(),7);
     EXPECT_EQ(game.findPlayer(id7).getColor(),8);
-    EXPECT_EQ(game.findPlayer(id8).getColor(),9);
 }
 
 TEST(host_test,first_player_host){
@@ -106,7 +103,6 @@ TEST(start_game,game_start){
     int id5=game.joinPlayer("player5",5);
     int id6=game.joinPlayer("player6",6);
     int id7=game.joinPlayer("player7",7);
-    int id8=game.joinPlayer("player8",8);
     game.gameStart();
     vector<Player> list=game.getPlayers();
     int poolc=0;
@@ -123,9 +119,9 @@ TEST(start_game,game_start){
     });
     EXPECT_EQ(poolc, 4);
     EXPECT_EQ(morgo, 2);
-    EXPECT_EQ(mid, 2);
+    EXPECT_EQ(mid, 1);
     for_each(game.playerList.begin(),game.playerList.end(),[&](Player& player){
-        EXPECT_EQ(player.getMission().size(),3);
+        EXPECT_EQ(player.getMission().size(),1);
     });
 }
 

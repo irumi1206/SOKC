@@ -7,6 +7,7 @@ class TcpConnection{
 
     public :
         TcpConnection();
+        int getTcpSocket();
         void setTcpSocket(int socketDescriptor);
         void in(char* buffer,int len);
         void out(char* message);

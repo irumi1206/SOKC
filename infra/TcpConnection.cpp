@@ -24,3 +24,7 @@ void TcpConnection::out(char* message){
     //std::char_traits<char8_t>::length(message)
 }
 
+int TcpConnection::getTcpSocket(){
+    return tcpSocket;
+}
+

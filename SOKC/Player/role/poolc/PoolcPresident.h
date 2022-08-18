@@ -1,0 +1,10 @@
+#ifndef POOLCPRESIDENT_H
+#define POOLCPRESIDENT_H
+#include "/home/ubuntu/GameProject/SOKC-branch/Player/Player.h"
+#include "/home/ubuntu/GameProject/SOKC-branch/jsonParser/JsonParser.h"
+
+class PoolcPresident:public Player{
+    
+    void userAbility(Json::Value data);
+};
+#endif

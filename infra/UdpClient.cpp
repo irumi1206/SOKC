@@ -46,7 +46,7 @@ int main() {
         int n=recvfrom(sockfd, out, 1024, MSG_WAITALL, (struct sockaddr *) &clientAddress,&l);
         printf("%s\n",out);
         std::cout<<ntohs(clientAddress.sin_port);
-        //valread = read(sock, buffer, 1024);
+        int valread = read(sockfd, out, 1024);
         printf("%s\n", inp);
     }
         

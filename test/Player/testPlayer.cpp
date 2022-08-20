@@ -34,12 +34,12 @@ TEST(player_info_test,isDie){
     EXPECT_EQ(player.isDie(),false);
 }
 
-TEST(position_test,position){
-    Player player=Player(3,"YM");
-    player.setPosition(3.5,6.2);
-    tuple<float,float> temp=make_tuple(3.5,6.2);
-    EXPECT_EQ(player.getPosition(),temp);
-}
+// TEST(position_test,position){
+//     Player player=Player(3,"YM");
+//     player.setPosition(3.5,6.2);
+//     tuple<float,float> temp=make_tuple(3.5,6.2);
+//     EXPECT_EQ(player.getPosition(),temp);
+// }
 
 TEST(mission_test,add_mission){
     Player player=Player(3,"YM");

@@ -18,6 +18,8 @@ public:
     int votingTime;//
     int conferenceCoolTime;//
     int killCoolTime;//
+    int hackedMission=-1;
+    int hackerId=-1;
     GameSetting();
 public://getter, setter
     std::vector<int> getPoolc();
@@ -44,6 +46,5 @@ public://getter, setter
     void setRoleSetting(int id, bool setting);
     std::vector<std::map<int,bool>> getRoleSetting();
 
-    int roleToInt(std::string role);
 };
 #endif

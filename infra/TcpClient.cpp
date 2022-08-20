@@ -35,8 +35,9 @@ int main(int argc, char const* argv[])
     }
     while(1){
         char inp[1024]={0};
-        char8_t buffer[1024] = { 0 };
+        char buffer[1024] = { 0 };
         std::cin.getline(inp, 1024);
+        printf("%s\n",inp);
         send(sock, inp, strlen(inp), 0);
         valread = read(sock, buffer, 1024);
         printf("%s\n", buffer);

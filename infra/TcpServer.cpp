@@ -7,15 +7,19 @@
 #include "TcpConnectionSocket.h"
 #include "TcpService.h"
 #include "TcpConnection.h"
+#include "GameService.h"
 #include <iostream>
-#define PORT 8080
+#define TCP_PORT 8080
 #define UDP_PORT 8079
-#define LEN 1024
 int main(int argc, char const* argv[])
 {
-    TcpService service=TcpService();
-    service.setPort(PORT);
-    service.setUdp(UDP_PORT);
-    service.start();
-    return 0;
+    GameService gameservice=GameService();
+    gameservice.setting(TCP_PORT,UDP_PORT);
+    gameservice.start();
+
+    // TcpService tcp=TcpService();
+    // tcp.setPort(PORT);
+    // tcp.setUdp(UDP_PORT);
+    // tcp.start();
+
 }

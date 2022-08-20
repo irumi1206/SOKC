@@ -1,11 +1,14 @@
 INFRA_PATH=/home/ubuntu/GameProject/infra/
 SOKC_PATH=/home/ubuntu/GameProject/compile/logicCompile/
 
-TcpServer : TcpServer.o TcpService.o TcpConnectionSocket.o TcpConnection.o
-	g++ -std=c++2a $(SOKC_PATH)Score.o $(SOKC_PATH)Role.o $(SOKC_PATH)Position.o $(SOKC_PATH)Game.o $(SOKC_PATH)GameSetting.o $(SOKC_PATH)Player.o $(SOKC_PATH)Mission.o $(SOKC_PATH)JsonParser.o $(SOKC_PATH)Controller.o $(SOKC_PATH)VotingStatus.o TcpServer.o TcpService.o TcpConnectionSocket.o TcpConnection.o -ljsoncpp -lpthread -o TcpServer
+TcpServer : TcpServer.o TcpService.o TcpConnectionSocket.o TcpConnection.o GameService.o
+	g++ -std=c++2a $(SOKC_PATH)Score.o $(SOKC_PATH)Role.o $(SOKC_PATH)Position.o $(SOKC_PATH)Game.o $(SOKC_PATH)GameSetting.o $(SOKC_PATH)Player.o $(SOKC_PATH)Mission.o $(SOKC_PATH)JsonParser.o $(SOKC_PATH)Controller.o $(SOKC_PATH)VotingStatus.o TcpServer.o GameService.o TcpService.o TcpConnectionSocket.o TcpConnection.o -ljsoncpp -lpthread -o TcpServer
 
-TcpServer.o : $(INFRA_PATH)TcpServer.cpp $(INFRA_PATH)TcpService.h $(INFRA_PATH)TcpConnectionSocket.h $(INFRA_PATH)TcpConnection.h
+TcpServer.o : $(INFRA_PATH)GameService.cpp $(INFRA_PATH)GameService.h $(INFRA_PATH)TcpServer.cpp $(INFRA_PATH)TcpService.h $(INFRA_PATH)TcpConnectionSocket.h $(INFRA_PATH)TcpConnection.h
 	g++ -std=c++2a -c $(INFRA_PATH)TcpServer.cpp
+
+GameService.o : $(INFRA_PATH)GameService.cpp $(INFRA_PATH)GameService.h $(INFRA_PATH)TcpService.cpp $(INFRA_PATH)TcpService.h $(INFRA_PATH)TcpConnectionSocket.h $(INFRA_PATH)TcpConnection.h
+	g++ -std=c++2a -c $(INFRA_PATH)GameService.cpp
 
 TcpService.o : $(INFRA_PATH)TcpService.cpp $(INFRA_PATH)TcpService.h $(INFRA_PATH)TcpConnectionSocket.h $(INFRA_PATH)TcpConnection.h 
 	g++ -std=c++2a -c $(INFRA_PATH)TcpService.cpp
@@ -35,5 +38,5 @@ clean :
 #	rm -rf udpServer
 	rm -rf TcpService
 #	rm -rf $(INFRA_PATH)udpService
-	rm -rf *Client
+#	rm -rf *Client
 

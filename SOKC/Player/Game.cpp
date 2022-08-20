@@ -49,21 +49,20 @@ int Game::deletePlayer(int playerId){
     return 0;
 }
 //플레이어 참가, 아이디는 tcp의 index로 지정해줌
-int Game::joinPlayer(std::string name,int clientIndex){
+int Game::joinPlayer(std::string name,int clientId){
     int result=1;
-    int id=10000+clientIndex;
     // std::for_each(playerList.begin(), playerList.end(), [&](Player& player){
     //     if(player.getId()==id){
     //         result=0;
     //     }
     // });
-    Player tempPlayer=Player(id,name);
+    Player tempPlayer=Player(clientId,name);
     tempPlayer.setColor(emptyColor());
     if(playerList.size()==0){
-        hostId=id;
+        hostId=clientId;
     }
     playerList.push_back(tempPlayer);
-    return id;
+    return clientId;
 }
 //플레이어 참가, input을 player로 받을 경우(사용하지 않음)
 int Game::joinPlayer(Player playerIn){
@@ -105,20 +104,17 @@ void Game::assignRole(){
         int temp=rand()%playercount;
         int temp2;
         if(temp<poolcCount){
-            int poolcAbilitySize=poolcAbility.size();
-            temp2=rand()%poolcAbilitySize;
+            temp2=rand()%poolcAbility.size();
             playerList[i].setRole(poolcAbility[temp2]);
             poolcAbility.erase(poolcAbility.begin()+temp2);
             poolcCount-=1;
         }else if(temp<poolcCount+morgoCount){
-            int morgoAbilitySize=morgoAbility.size();
-            temp2=rand()%morgoAbilitySize;
+            temp2=rand()%morgoAbility.size();
             playerList[i].setRole(morgoAbility[temp2]);
             morgoAbility.erase(morgoAbility.begin()+temp2);
             morgoCount-=1;
         }else{
-            int midAbilitySize=midAbility.size();
-            temp2=rand()%midAbilitySize;
+            temp2=rand()%midAbility.size();
             playerList[i].setRole(midAbility[temp2]);
             midAbility.erase(midAbility.begin()+temp2);
             midCount-=1;
@@ -149,10 +145,17 @@ int Game::emptyColor(){
 void Game::gameStart(){
     assignRole();
     std::for_each(playerList.begin(),playerList.end(),[&](Player& player){
+        playerLiveList.push_back(player.getId());
         player.live();
         player.setStatus(Gaming);
+    });
+}
+void Game::roundStart(){
+    std::for_each(playerList.begin(),playerList.end(),[&](Player& player){
         player.assignMission(getMissionCount());
     });
+    gameSetting.hackedMission=-1;
+    gameSetting.hackerId=-1;
 }
 //투표
 void Game::clearVoteStorage(){
@@ -191,11 +194,6 @@ int Game::calculateVoteDead(){
     }
 
     return id;
-}
-
-bool Game::checkEnd(){
-    return false;
-    //추가 해야 함.
 }
 
 
@@ -258,4 +256,50 @@ void Game::setRoleSettingChange(int id, bool set){
 }
 std::vector<std::map<int,bool>> Game::getRoleSettingChange(){
     return this->gameSetting.getRoleSetting();
+}
+
+void Game::voteEndingQueueAdd(Json::Value data){
+    this->voteEndingQueue.push(data);
+}
+
+//void Game::inGameListAdder(int role, Player player){
+//
+//}
+
+//void Game::inGameListFlush(){
+//    this->inGameList.clear;
+//}
+
+bool Game::isGameEnd(){//게임이 끝났는지 체크, 0은 poolc, 1은 morgo, 2는 중립
+    int alivePoolC;
+    int aliveMorgo;
+    int aliveMid;
+    std::for_each(playerList.begin(),playerList.end(),[&](Player& player){
+        if(!player.isDie()){
+            if(player.getTeam()==PoolC){
+                alivePoolC+=1;
+            }else if(player.getTeam()==Morgo){
+                aliveMorgo+=1;
+            }else{
+                aliveMid+=1;
+            }
+        }
+    });
+    if(aliveMorgo==0){
+        return true;
+    }else if(alivePoolC+aliveMid<=aliveMorgo){
+        return true;
+    }else{
+        return false;
+    }
+}
+
+bool Game::isBenefit(){
+    bool check=true;
+    std::for_each(playerList.begin(),playerList.end(),[&](Player& player){
+        if(player.getTeam()==PoolC && player.countMission() && !player.isDie()){
+            check=false;
+        }
+    });
+    return check;
 }

@@ -7,24 +7,33 @@
 #include <cstdlib>
 #include "VotingStatus.h"
 #include <map>
+#include "/home/ubuntu/GameProject/SOKC/jsonParser/JsonParser.h"
 #include "gameSetting/GameSetting.h"
+#include <queue>
 
 class Game{
 public: 
     GameSetting gameSetting;
     int id;//방 id
     std::vector<Player> playerList;//방에 참여해 있는 플레이어들을 담는 구조체
+    //std::vector<Player *> inGameList;
     int hostId;
     //투표 추가
     std::vector<VotingStatus> voteStorage;
     void clearVoteStorage();
     void putVote(int votingPlayerId,int votedPlayerId);
     int calculateVoteDead();
-    //
+    std::vector<int> playerLiveList;
+    std::vector<int> playerDeadList;
+    //투표종료 queue
+    std::queue<Json::Value> voteEndingQueue;
+    std::queue<Json::Value> voteStartQueue;//군기반장용
 
 public:
     //게임 시작 함수
     void gameStart();
+    //라운드 시작
+    void roundStart();
     //생성자, id는 임시적으로 100할당
     Game();
 
@@ -84,7 +93,16 @@ public:
     // std::vector<int> getMolgo();
     // std::vector<int> getMid();
     int emptyColor();
-    bool checkEnd();
     std::map<int,int> voteInfo();
+
+    //queue 
+    void voteEndingQueueAdd(Json::Value data);
+
+    //void inGameListAdder(int role, Player player);
+    //void inGameListFlush();
+    //게임 종료 여부 확인
+    bool isGameEnd();
+    //베네핏 획득 여부 확인
+    bool isBenefit();
 };
 #endif

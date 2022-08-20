@@ -56,20 +56,20 @@ test : mission.o position.o role.o score.o player.o game.o controller.o jsonpars
 	./ControllerTest
 	./PlayerTest
 	./GameTest
-testController.o : VotingStatus.o Mission.o Player.o Position.o Role.o Score.o Controller.o JsonParser.o Game.o gameSetting.o
+testController.o : VotingStatus.o Mission.o Player.o Position.o Role.o Score.o Controller.o JsonParser.o Game.o GameSetting.o
 	g++ $(TEST_PATH)/testController.cpp $(PLAYER) VotingStatus.o Controller.o JsonParser.o Game.o GameSetting.o -o ControllerTest -ljsoncpp -isystem ${GTEST_DIR}/include -L${GTEST_DIR}/build -pthread -lgtest
 
-testGame.o : VotingStatus.o Mission.o Player.o Position.o Role.o Score.o Game.o gameSetting.o
+testGame.o : VotingStatus.o Mission.o Player.o Position.o Role.o Score.o Game.o GameSetting.o
 	g++ $(TEST_PATH)/Player/testGame.cpp $(PLAYER) VotingStatus.o Game.o GameSetting.o -o GameTest -ljsoncpp -isystem ${GTEST_DIR}/include -L${GTEST_DIR}/build -pthread -lgtest
 
 testPlayer.o : Mission.o Player.o Position.o Role.o Score.o
 	g++ $(TEST_PATH)/Player/testPlayer.cpp $(PLAYER) -o PlayerTest -ljsoncpp -isystem ${GTEST_DIR}/include -L${GTEST_DIR}/build -pthread -lgtest
 
-testController : VotingStatus.o Mission.o Player.o Position.o Role.o Score.o Controller.o JsonParser.o Game.o gameSetting.o
+testController : VotingStatus.o Mission.o Player.o Position.o Role.o Score.o Controller.o JsonParser.o Game.o GameSetting.o
 	make testController.o
 	./ControllerTest
 
-testGame : VotingStatus.o Mission.o Player.o Position.o Role.o Score.o Game.o gameSetting.o
+testGame : VotingStatus.o Mission.o Player.o Position.o Role.o Score.o Game.o GameSetting.o
 	make testGame.o
 	./GameTest
 

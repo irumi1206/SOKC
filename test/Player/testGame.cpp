@@ -87,6 +87,22 @@ TEST(settings,cooltime){
     EXPECT_EQ(game.getVotingTime(),40);
 }
 
+TEST(missions,benefit_take){
+    Game game=Game();
+    int id1=game.joinPlayer("player1",1);
+    int id2=game.joinPlayer("player2",2);
+    int id3=game.joinPlayer("player3",3);
+    game.findPlayer(id1).addMission(1);
+    game.findPlayer(id2).addMission(2);
+    game.findPlayer(id3).addMission(3);
+    game.findPlayer(id1).finishMission(1);
+    EXPECT_EQ(game.isBenefit(),false);
+    game.findPlayer(id2).finishMission(2);
+    EXPECT_EQ(game.isBenefit(),false);
+    game.findPlayer(id3).finishMission(3);
+    EXPECT_EQ(game.isBenefit(),true);
+}
+
 TEST(color_test,assign_color_auto){
     Game game=Game();
     int id1=game.joinPlayer("player1",1);
@@ -125,6 +141,7 @@ TEST(start_game,game_start){
     int id6=game.joinPlayer("player6",6);
     int id7=game.joinPlayer("player7",7);
     game.gameStart();
+    game.roundStart();
     vector<Player> list=game.getPlayers();
     int poolc=0;
     int morgo=0;

@@ -73,17 +73,17 @@ void Player::finishMission(int missionId){
 void Player::assignMission(int count){
     this->mission.assign(count,this->id);
 };
-//위치 지정
-void Player::setPosition(float x,float y){
-    this->position.setPosition(x,y);
-};
-//위치값을 tuple로 받기
-std::tuple<float,float> Player::getPosition(){
-    return std::make_tuple(position.x,position.y);
-};
-void Player::randomPosition(){
-    this->position.randomPosition(this->id);
-}
+// //위치 지정
+// void Player::setPosition(float x,float y){
+//     this->position.setPosition(x,y);
+// };
+// //위치값을 tuple로 받기
+// std::tuple<float,float> Player::getPosition(){
+//     return std::make_tuple(position.x,position.y);
+// };
+// void Player::randomPosition(){
+//     this->position.randomPosition(this->id);
+// }
 //killscore추가
 void Player::addKillScore(int scores){
     this->score.addKill(scores);

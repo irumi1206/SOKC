@@ -2,7 +2,7 @@
 #define PLAYER_H
 #include <iostream>
 #include "playerImplements/Score.h"
-#include "playerImplements/Position.h"
+//#include "playerImplements/Position.h"
 #include "playerImplements/Mission.h"
 #include "playerImplements/Role.h"
 
@@ -13,18 +13,19 @@ enum PlayStatus{
 
 class Player
 {
-private:
+public:
     PlayStatus status;
     std::string name;
     int id;
     CharacterRoleFlag roleflag;//직업(역할)
     bool die=false;//살았는지 죽었는지
-    SerializableVector3 position;//위치
+    //SerializableVector3 position;//위치
     PlayerScore score;//점수 object
     Mission mission;//미션 object
     bool isHost;//해당 플레이어가 호스트인지
     int color;//색 확인
     int voteCount=1;
+    int benefit=0;
 public://initializer
     Player(int id, std::string name);
     Player();
@@ -60,13 +61,13 @@ public: //Mission
     void finishMission(int missionId);
     //미션 할당, 개수를 넣으면 할당해줌.
     void assignMission(int count);
-public: //position
-    //위치 지정
-    void setPosition(float x,float y);
-    //위치값을 tuple로 받기
-    std::tuple<float,float> getPosition();
-    //시작위치 랜덤 지정
-    void randomPosition();
+// public: //position
+//     //위치 지정
+//     void setPosition(float x,float y);
+//     //위치값을 tuple로 받기
+//     std::tuple<float,float> getPosition();
+//     //시작위치 랜덤 지정
+//     void randomPosition();
 public: //score
     //killscore추가
     void addKillScore(int scores);

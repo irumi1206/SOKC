@@ -21,12 +21,12 @@ public:
     //투표 추가
     std::vector<VotingStatus> voteStorage;
     void clearVoteStorage();
-    void putVote(int votingPlayerId,int votedPlayerId);
-    int calculateVoteDead();
+    bool putVote(int votingPlayerId,int votedPlayerId);
+    int calculateVoteDead(std::map<int,int> storage);
     std::vector<int> playerLiveList;
     std::vector<int> playerDeadList;
     //투표종료 queue
-    std::queue<Json::Value> voteEndingQueue;
+    std::queue<Json::Value> voteEndingQueue;//저격수, 변덕쟁이용
     std::queue<Json::Value> voteStartQueue;//군기반장용
 
 public:
@@ -92,6 +92,7 @@ public:
     // std::vector<int> getPoolc();
     // std::vector<int> getMolgo();
     // std::vector<int> getMid();
+    void assignMission();
     int emptyColor();
     std::map<int,int> voteInfo();
 
@@ -101,8 +102,14 @@ public:
     //void inGameListAdder(int role, Player player);
     //void inGameListFlush();
     //게임 종료 여부 확인
-    bool isGameEnd();
+    int isGameEnd();
     //베네핏 획득 여부 확인
-    bool isBenefit();
+    bool isBenefit();//1은 poolc, 2는 morgo, 3은 mid
+    Json::Value MVP();
+    int missionClearTOP();
+    int votingAccTOP();
+    int benefitTOP();
+    int killScoreTOP();
+    int talkingTOP();
 };
 #endif

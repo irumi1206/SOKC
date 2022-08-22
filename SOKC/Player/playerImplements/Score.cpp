@@ -8,6 +8,7 @@ PlayerScore::PlayerScore(){
     missionScore=0;
     POTG=0;
     SOTG=0;
+    benefitTaken=0;
 };
 PlayerScore::PlayerScore(const PlayerScore& other){
     this->voting_valid=other.voting_valid;
@@ -61,3 +62,14 @@ int PlayerScore::getPOTG(){
 int PlayerScore::getSOTG(){
     return SOTG;
 };
+
+float PlayerScore::averageMissionClear(){
+    if(missionClearScore.size()==0){
+        return 100;
+    }
+    int sum=0;
+    std::for_each(missionClearScore.begin(),missionClearScore.end(),[&](int score){
+        sum+=score;
+    });
+    return (float)sum/(float)missionClearScore.size();
+}

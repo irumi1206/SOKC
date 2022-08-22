@@ -17,9 +17,4 @@ int main(int argc, char const* argv[])
     gameservice.setting(TCP_PORT,UDP_PORT);
     gameservice.start();
 
-    // TcpService tcp=TcpService();
-    // tcp.setPort(PORT);
-    // tcp.setUdp(UDP_PORT);
-    // tcp.start();
-
 }

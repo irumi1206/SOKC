@@ -86,7 +86,24 @@ int Game::countPlayers(){
 std::vector<Player> Game::getPlayers(){
     return playerList;
 }
-
+void Game::assignMission(){
+    int playerCount=countPlayers();
+    std::vector<int> missions = gameSetting.missionVector;
+    srand(time(NULL));
+    int i=0;
+    while(playerCount){
+        if(playerList[i].roleflag.role==7){
+            int temp=rand()%missions.size();
+            playerList[i].addMission(missions[temp]);
+            missions.erase(missions.begin()+temp);
+        }
+        int temp=rand()%missions.size();
+        playerList[i].addMission(missions[temp]);
+        missions.erase(missions.begin()+temp);
+        playerCount-=1;
+        i++;
+    }
+}
 void Game::assignRole(){
 
     int playercount=countPlayers();
@@ -151,8 +168,13 @@ void Game::gameStart(){
     });
 }
 void Game::roundStart(){
+    assignMission();
     std::for_each(playerList.begin(),playerList.end(),[&](Player& player){
-        player.assignMission(getMissionCount());
+        if(player.roleflag.role==22){
+            player.roleflag.abilityCount=1;
+        }else if(player.roleflag.role==24){
+            player.roleflag.abilityCount=1;
+        }
     });
     gameSetting.hackedMission=-1;
     gameSetting.hackerId=-1;
@@ -162,16 +184,22 @@ void Game::clearVoteStorage(){
     this->voteStorage.clear();
 }
 
-void Game::putVote(int votingPlayerId,int votedPlayerId){
-    this->voteStorage.push_back(VotingStatus(votingPlayerId,votedPlayerId));
+bool Game::putVote(int votingPlayerId,int votedPlayerId){
     Player& votingPlayer=findPlayer(votingPlayerId);
     Player& votedPlayer=findPlayer(votedPlayerId);
-    if(votingPlayer.getTeam()!=votedPlayer.getTeam()){
-        votingPlayer.addVotingAc(1);
-    }else{
-        votingPlayer.addVotingMi(1);
+    if(votingPlayer.voteCount>0){
+        votingPlayer.voteCount-=1;
+        this->voteStorage.push_back(VotingStatus(votingPlayerId,votedPlayerId));
+        if(votingPlayer.getTeam()!=votedPlayer.getTeam()){
+            votingPlayer.addVotingAc(1);
+        }else{
+            votingPlayer.addVotingMi(1);
+        }
+        return true;
     }
+    return false;
 }
+
 std::map<int,int> Game::voteInfo(){
     std::map<int,int> storage;
     for(VotingStatus currentVote:voteStorage){
@@ -180,9 +208,7 @@ std::map<int,int> Game::voteInfo(){
     return storage;
 }
 
-int Game::calculateVoteDead(){
-    std::map<int,int> storage=voteInfo();
-
+int Game::calculateVoteDead(std::map<int,int> storage){
     int id=-1;
     int count=0;
     for(auto current=storage.begin();current!=storage.end();current++){
@@ -270,10 +296,10 @@ void Game::voteEndingQueueAdd(Json::Value data){
 //    this->inGameList.clear;
 //}
 
-bool Game::isGameEnd(){//게임이 끝났는지 체크, 0은 poolc, 1은 morgo, 2는 중립
-    int alivePoolC;
-    int aliveMorgo;
-    int aliveMid;
+int Game::isGameEnd(){//게임이 끝났는지 체크, 1은 poolc, 2는 morgo, 3은 중립
+    int alivePoolC=0;
+    int aliveMorgo=0;
+    int aliveMid=0;
     std::for_each(playerList.begin(),playerList.end(),[&](Player& player){
         if(!player.isDie()){
             if(player.getTeam()==PoolC){
@@ -286,11 +312,11 @@ bool Game::isGameEnd(){//게임이 끝났는지 체크, 0은 poolc, 1은 morgo, 
         }
     });
     if(aliveMorgo==0){
-        return true;
-    }else if(alivePoolC+aliveMid<=aliveMorgo){
-        return true;
+        return 1;
+    }else if((alivePoolC+aliveMid)<=aliveMorgo){
+        return 2;
     }else{
-        return false;
+        return 0;
     }
 }
 
@@ -302,4 +328,120 @@ bool Game::isBenefit(){
         }
     });
     return check;
+}
+
+Json::Value Game::MVP(){
+    std::vector<int> mvps={1,2,3,4,5};
+    Json::Value out;
+    Json::Value MVPS;
+    srand(time(NULL));
+    for(int i=0;i<3;i++){
+        Json::Value mvp;
+        int index=rand()%mvps.size();
+        switch(mvps[index]){
+            case 1://평균 미션 완료 순위
+            {
+                int id = missionClearTOP();
+                mvp["type"]=1;
+                mvp["id"]=id;
+                mvp["score"]=findPlayer(id).score.averageMissionClear();
+                MVPS["MVP"].append(mvp);
+                break;
+            }
+            case 2://투표 정확도
+            {
+                int id = votingAccTOP();
+                mvp["type"]=2;
+                mvp["id"]=id;
+                mvp["score"]=(int)(findPlayer(id).score.votingAccuracy()*100.0);
+                MVPS["MVP"].append(mvp);
+                break;
+            }
+            case 3://베네핏 최다 획득
+            {
+                int id = benefitTOP();
+                mvp["type"]=3;
+                mvp["id"]=id;
+                mvp["score"]=findPlayer(id).score.benefitTaken;
+                MVPS["MVP"].append(mvp);
+                break;
+            }
+            case 4://최대 킬
+            {
+                int id = killScoreTOP();
+                mvp["type"]=4;
+                mvp["id"]=id;
+                mvp["score"]=findPlayer(id).score.killScore;
+                MVPS["MVP"].append(mvp);
+                break;
+            }
+            case 5://수다왕
+            {
+                mvp["type"]=5;
+                mvp["id"];
+                mvp["score"];
+                MVPS["MVP"].append(mvp);
+                break;
+            }
+            default:
+            break;
+        }
+        mvps.erase(mvps.begin()+index);
+    }
+    return MVPS;
+}
+
+int Game::missionClearTOP(){
+    int id=0;
+    int score=1000;
+    std::for_each(playerList.begin(),playerList.end(),[&](Player player){
+        if(player.score.averageMissionClear()<score){
+            id=player.getId();
+            score=player.score.averageMissionClear();
+        }
+    });
+    return id;
+}
+
+int Game::votingAccTOP(){
+    int id=0;
+    float score=0;
+    std::for_each(playerList.begin(),playerList.end(),[&](Player player){
+        if(player.votingAccuracy()>score){
+            id=player.getId();
+            score=player.votingAccuracy();
+        }
+    });
+    return id;
+}
+
+int Game::benefitTOP(){
+    int id=0;
+    int score=0;
+    std::for_each(playerList.begin(),playerList.end(),[&](Player player){
+        if(player.score.benefitTaken>score){
+            id=player.getId();
+            score=player.score.benefitTaken;
+        }
+    });
+    return id;
+}
+
+int Game::killScoreTOP(){
+    int id=0;
+    int score=0;
+    std::for_each(playerList.begin(),playerList.end(),[&](Player player){
+        if(player.getTeam()==Morgo && player.getKillScore()>score){
+            id=player.getId();
+            score=player.getKillScore();
+        }
+    });
+    return id;
+}
+
+int Game::talkingTOP(){
+    int id=0;
+    int score=0;
+    //투표 통화쪽 구현 필요
+    return 1;
 }

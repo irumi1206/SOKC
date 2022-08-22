@@ -29,6 +29,11 @@ class GameService{
         void showconnectedClients();
         void getUdp();
         void sendTcp(TcpConnection tcpConnection,std::string inp);
+        void push(std::pair<TcpConnection,Json::Value> element);
+        std::pair<TcpConnection,Json::Value> pop();
+
+        
+
 
         //udp
         int udpSocket;

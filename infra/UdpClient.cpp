@@ -49,18 +49,5 @@ int main() {
         int valread = read(sockfd, out, 1024);
         printf("%s\n", inp);
     }
-        
-    // sendto(sockfd, (const char *)hello, strlen(hello), 
-    //     MSG_CONFIRM, (const struct sockaddr *) &servaddr,  
-    //         sizeof(servaddr)); 
-    // printf("Hello message sent.\n"); 
-            
-    // n = recvfrom(sockfd, (char *)buffer, MAXLINE,  
-    //             MSG_WAITALL, (struct sockaddr *) &servaddr, 
-    //             &len); 
-    // buffer[n] = '\0'; 
-    // printf("Server : %s\n", buffer); 
-    
-    // close(sockfd); 
     return 0; 
 }

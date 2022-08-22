@@ -13,9 +13,10 @@ class CharacterRoleFlag
 public:
     int role;
     Team team;
+    int abilityCount;
+    bool available=true;
     Team getTeam();
     void setRole(int role);
     int getRole();
 };
 #endif
-// bitmasking?

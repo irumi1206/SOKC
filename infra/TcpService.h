@@ -27,6 +27,9 @@ class TcpService{
         //udp
         void sendPosition(int sock);
         std::vector<struct sockaddr_in> udpStorage;
+        //time interval
+        void sendWithTimeInternal(Json::Value jsonRequest,int id,int second);
+        std::vector<std::thread> timeIntervalThread;
         
 
     public :

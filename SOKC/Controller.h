@@ -16,7 +16,8 @@ public:
     const std::string Content="Content";
     std::map<int,std::tuple<float,float>> positionVector;
     Controller();
-    Json::Value control(std::string in, int clientId);
+    Json::Value control1(std::string in, int clientId);
+    Json::Value control(Json::Value data, int clientId);
     Json::Value playerInfo();
     int roomCheck(int roomId);
     // Json::Value getMission(Player& player);
@@ -25,6 +26,8 @@ public:
     Json::Value setHost(int id);
     //Header 16
     Json::Value roundStartData();
+    //Header 22
+    Json::Value voteEnd();
     //Header 31
     Json::Value positions();
     //Header 35
@@ -33,13 +36,15 @@ public:
     Json::Value gameEnd(Team team);
     Json::Value teamPlayers(Team team);
     //투표
-    Json::Value voteResult();
+    Json::Value voteResult(std::map<int,int> storage);
     Json::Value deadList();
-    //투표 끝났는지 확인
-    Json::Value votingCheck();
     Json::Value roleSetting();
+    //투표 끝났는지 확인
+    bool isVoteEnd();
+    void startVote();
 
     Json::Value useAbility(int roleFlag, Json::Value data);
+    Json::Value survivors();
 };
 
 #endif

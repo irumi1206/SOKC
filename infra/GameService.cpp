@@ -10,6 +10,16 @@ void GameService::setting(int tcpPort, int udpPort){
     connectionSocket.getReady();
 }
 
+void GameService::push(std::pair<TcpConnection,Json::Value> element){
+    processingQueue.push(element);
+}
+
+std::pair<TcpConnection,Json::Value> GameService::pop(){
+    std::pair<TcpConnection,Json::Value> popElement = processingQueue.front();
+    processingQueue.pop();
+    return popElement;
+}
+
 void GameService::processQueue(){
 
     while(1){
@@ -18,8 +28,9 @@ void GameService::processQueue(){
         //queueCondition.wait(lock);
         if(processingQueue.empty()) continue;
 
-        TcpConnection tcpConnection=processingQueue.front().first;
-        Json::Value data=processingQueue.front().second;
+        std::pair<TcpConnection,Json::Value> popElement=pop();
+        TcpConnection tcpConnection=popElement.first;
+        Json::Value data=popElement.second;
 
         try{
             std::cout<<"\ninput\n";
@@ -56,6 +67,9 @@ void GameService::processQueue(){
                     tcpServices[roomIndex].contollerLogic(data,id);
                     tcpConnection.closeSocket();
                 }
+                else{
+                    std::cout<<"\n already exited, but reqeust came to queue\n";
+                }
             }
             //disconnection
             else if(data["Header"].asInt()==-1){
@@ -69,6 +83,9 @@ void GameService::processQueue(){
                     std::cout<<"\nplayer left by diconnection, erase info\n";
                     tcpServices[roomIndex].contollerLogic(data,id);
                     tcpConnection.closeSocket();
+                }
+                else{
+                    std::cout<<"\n already exited, but reqeust came to queue\n";
                 }
             }
             else{
@@ -109,8 +126,6 @@ void GameService::processQueue(){
             tcpConnection.closeSocket();
         }
 
-        processingQueue.pop();
-
     }
 
     std::cout<<"end queueing";
@@ -124,6 +139,7 @@ void GameService::initialConnectionLogic(int clientNum, TcpConnection tcpConnect
 
     try{
         tcpConnection.in(validationInp,1024);
+        if(strlen(validationInp)==0) throw std::runtime_error("disconnection error");
         std::string validationString=std::string(validationInp);
         Json::Value validationJson=toJson(validationString);
         Json::Value checking;
@@ -134,9 +150,6 @@ void GameService::initialConnectionLogic(int clientNum, TcpConnection tcpConnect
             validationResponse["Header"]=0;
             validationResponse["Content"]["accpetance"]=1;
             sendTcp(tcpConnection,validationResponse.toStyledString()+"$");
-            // char validationOut[1024]={0};
-            // strcpy(validationOut,validationResponse.toStyledString().c_str());
-            // tcpConnection.out(validationOut);
             std::cout<<clientNum<<" client success on validation\n";
         }
         else{
@@ -144,7 +157,7 @@ void GameService::initialConnectionLogic(int clientNum, TcpConnection tcpConnect
         }
     }
     catch(...){
-        std::cout<<clientNum<<" client disconnected due to validation error\n";
+        std::cout<<clientNum<<" client disconnected while valiation\n";
         Json::Value validationResponse;
         validationResponse["Header"]=0;
         validationResponse["Content"]["accpetance"]=-1;
@@ -161,23 +174,23 @@ void GameService::initialConnectionLogic(int clientNum, TcpConnection tcpConnect
         try{
             char inBuffer[1024]={0};
             tcpConnection.in(inBuffer,1024);
-            //std::cout<<"\n\nclient "<<clientNum<<" ?input\n";
-            //std::cout<<inBuffer<<"\n\n";
+            if(strlen(inBuffer)==0) throw std::runtime_error("disconnection error");
             std::string inp=std::string(inBuffer);
             jsons=toJson(inp);
-            if(strlen(inBuffer)==0) throw std::runtime_error("validation error");
-            processingQueue.push(std::make_pair(tcpConnection,jsons));
+            push(std::make_pair(tcpConnection,jsons));
         }
         catch(...){
-            Json::Value disconnectJson;
-            disconnectJson["Header"]=-1;
-            processingQueue.push(std::make_pair(tcpConnection,disconnectJson));
+            if(mapConnectionRoom.find(tcpConnection)!=mapConnectionRoom.end()) {
+                Json::Value disconnectJson;
+                disconnectJson["Header"]=6;
+                disconnectJson["Content"]["id"]=mapConnectionRoom[tcpConnection];
+                push(std::make_pair(tcpConnection,disconnectJson));
+            }
             std::cout<<clientNum<<" client disconnected\n";
             tcpConnection.closeSocket();
             return;
         }
 
-        
         //std::unique_lock<std::mutex> lock(queueMutex);
         //queueCondition.notify_one();
         
@@ -206,12 +219,13 @@ void GameService::udpGet(){
             //printf time
             auto start = std::chrono::system_clock::now();
             std::time_t starting = std::chrono::system_clock::to_time_t(start);
-            std::cout <<std::ctime(&starting)<<"\n";
+            
+            // std::cout <<"\n"<<std::ctime(&starting)<<"\n";
+            // std::cout<<"\n"<<positionString<<"\n";
             
             int id=positionJson["Content"]["id"].asInt();
             int roomId=id/100-100;
-            //std::cout<<positionString<<"\n";
-            tcpServices[roomId].controller.control(positionString,id);
+            tcpServices[roomId].controller.control(positionJson,id);
         } 
         catch(...){}
     }

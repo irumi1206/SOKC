@@ -10,14 +10,15 @@ public:
     std::map<int,bool> poolcAbility;
     std::map<int,bool> morgoAbility;
     std::map<int,bool> midAbility;
-    int poolcCount=4;
-    int morgoCount=2;
-    int midCount=1;
+    std::vector<int> missionVector={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
+    int poolcCount=4; //4~7
+    int morgoCount=1; //1~4
+    int midCount=0;   //0~1
     int missionCount=1;
-    int discussionTime;//
-    int votingTime;//
-    int conferenceCoolTime;//
-    int killCoolTime;//
+    int discussionTime=30;//최소 10, 최대 60
+    int votingTime=30;//최소 10, 최대 60
+    int conferenceCoolTime=25;//최소 10, 최대 60
+    int killCoolTime=30;//최소 10, 최대 60
     int hackedMission=-1;
     int hackerId=-1;
     GameSetting();

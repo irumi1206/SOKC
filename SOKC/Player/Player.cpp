@@ -8,7 +8,7 @@ Player::Player(int id, std::string name){
     this->color=0;
 };
 Player::Player(){
-    this->id=-1;
+    this->id=-3;
 };
 bool Player::isDie(){
     return this->die;
@@ -69,21 +69,6 @@ void Player::resetMission(){
 void Player::finishMission(int missionId){
     this->mission.finish(missionId);
 };
-//미션 할당, 개수를 넣으면 할당해줌.
-void Player::assignMission(int count){
-    this->mission.assign(count,this->id);
-};
-// //위치 지정
-// void Player::setPosition(float x,float y){
-//     this->position.setPosition(x,y);
-// };
-// //위치값을 tuple로 받기
-// std::tuple<float,float> Player::getPosition(){
-//     return std::make_tuple(position.x,position.y);
-// };
-// void Player::randomPosition(){
-//     this->position.randomPosition(this->id);
-// }
 //killscore추가
 void Player::addKillScore(int scores){
     this->score.addKill(scores);

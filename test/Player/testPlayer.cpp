@@ -55,7 +55,9 @@ TEST(mission_test,add_mission){
     player.addMission(5);
     EXPECT_EQ(player.countMission(),2);
     player.resetMission();
-    player.assignMission(3);
+    player.addMission(3);
+    player.addMission(4);
+    player.addMission(5);
     EXPECT_EQ(player.countMission(),3);
 }
 

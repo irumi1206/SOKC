@@ -1,6 +1,7 @@
 #ifndef SCORE_H
 #define SCORE_H
 #include <iostream>
+#include <vector>
 
 class PlayerScore
 {
@@ -9,6 +10,8 @@ public:
     int voting_invalid;
     int killScore;
     int missionScore;
+    std::vector<int> missionClearScore;
+    int benefitTaken;
     int POTG;
     int SOTG;
     PlayerScore();
@@ -25,5 +28,6 @@ public:
     void addSOTG(int score);
     int getPOTG();
     int getSOTG();
+    float averageMissionClear();
 };
 #endif

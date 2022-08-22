@@ -25,6 +25,7 @@ public:
     int calculateVoteDead(std::map<int,int> storage);
     std::vector<int> playerLiveList;
     std::vector<int> playerDeadList;
+    bool voteFinishedByVote;
     //투표종료 queue
     std::queue<Json::Value> voteEndingQueue;//저격수, 변덕쟁이용
     std::queue<Json::Value> voteStartQueue;//군기반장용

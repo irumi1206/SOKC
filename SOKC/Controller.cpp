@@ -88,7 +88,7 @@ Json::Value Controller::control(Json::Value data, int clientId){
                 Json::Value toAll1;
                 toAll1["Header"]=8;
                 toAll1["Content"]["id"]=game.getHost();
-                out["toAll"].append(toAll);
+                out["toAll"].append(toAll1);
             }
             toAll[Content]["id"]=id;
             out["toAll"].append(toAll);
@@ -159,10 +159,10 @@ Json::Value Controller::control(Json::Value data, int clientId){
             toOne[Content]["sideCount"]["morgoCount"]=game.getMorgoCount();
             toOne[Content]["sideCount"]["ysfbcCount"]=game.getMidCount();
             
-            toOne[Content]["coolTime"]["killCoolTime"]=game.getKillCoolTime();
-            toOne[Content]["coolTime"]["conferenceCoolTime"]=game.getConferenceCoolTime();
-            toOne[Content]["coolTime"]["discussionTime"]=game.getDiscussionTime();
-            toOne[Content]["coolTime"]["votingTime"]=game.getVotingTime();
+            toOne[Content]["coolTime"]["killCool"]=game.getKillCoolTime();
+            toOne[Content]["coolTime"]["conferenceCool"]=game.getConferenceCoolTime();
+            toOne[Content]["coolTime"]["discussion"]=game.getDiscussionTime();
+            toOne[Content]["coolTime"]["voting"]=game.getVotingTime();
 
             toOne[Content]["roleIn"]=roleSetting();
             out["toOne"].append(toOne);
@@ -171,6 +171,7 @@ Json::Value Controller::control(Json::Value data, int clientId){
         //게임 시작
         case 15:
         {
+            enterAllow=false;
             game.gameStart();
             game.roundStart();
             std::for_each(game.playerList.begin(),game.playerList.end(),[&](Player& player){
@@ -246,13 +247,19 @@ Json::Value Controller::control(Json::Value data, int clientId){
                     votingEnd["victim"]=votedPlayerId;
                     game.voteEndingQueueAdd(votingEnd);
                 }
-                other[Header]=21;
-                other[Content]["id"]=votingPlayerId;
-                out["other"].append(other);
+                if(game.findPlayer(votingPlayerId).voteCount==0){
+                    toAll[Header]=21;
+                    toAll[Content]["id"]=votingPlayerId;
+                    out["toAll"].append(toAll);
+                }
                 if(isVoteEnd()){
                     Json::Value temp=voteEnd();
-                    out["toAll"]=temp["toAll"];
-                    out["toEach"]=temp["toEach"];
+                    for(int i=0;i<temp["toAll"].size();i++){
+                        out["toAll"].append(temp["toAll"][i]);
+                    }
+                    for(int i=0;i<temp["toEach"].size();i++){
+                        out["toEach"].append(temp["toEach"][i]);
+                    }
                 }
             }
             return out;
@@ -284,12 +291,20 @@ Json::Value Controller::control(Json::Value data, int clientId){
                 toAll[Content]["victim"]=victim;
                 out["toAll"].append(toAll);
                 //Header 33
+                //군인일 경우
                 if(victimPlayer.roleflag.role==2 && victimPlayer.roleflag.available && (victimPlayer.benefit+victimPlayer.roleflag.abilityCount)>0){
                     if(victimPlayer.benefit>0){
                         victimPlayer.benefit-=1;
                     }else if(victimPlayer.roleflag.abilityCount>0){
                         victimPlayer.roleflag.abilityCount-=1;
                     };
+                    //부활 토큰 쏨.
+                    Json::Value toAll2;
+                    toAll2["Header"]=40;
+                    toAll2["Content"]["roleFlag"]=2;
+                    toAll2["Content"]["id"]=victim;
+                    out["toAll"].append(toAll2);
+                //능력 사용이 가능한 군인이 아닐 경우
                 }else{
                     victimPlayer.dead();
                     Json::Value toAll1;
@@ -304,12 +319,16 @@ Json::Value Controller::control(Json::Value data, int clientId){
                     {
                         out["toAll"].append(gameEnd(PoolC)["toAll"]);
                         out["toAll"].append(gameEnd(PoolC)["toAll1"]);
+                        break;
                     }
                     case 2:
                     {
                         out["toAll"].append(gameEnd(Morgo)["toAll"]);
                         out["toAll"].append(gameEnd(Morgo)["toAll1"]);
+                        break;
                     }
+                    default:
+                    break;
                 }
             }
             return out;
@@ -383,14 +402,17 @@ Json::Value Controller::control(Json::Value data, int clientId){
         //타이머 종료 신호
         case -100:
         {
-            std::for_each(game.playerList.begin(),game.playerList.end(),[&](Player& player){
-                if(!player.isDie() && player.voteCount>0){
-                    for(int i=0;i<player.voteCount;i++){
-                        game.putVote(player.getId(),-1);
+            if(game.voteFinishedByVote==false){
+                std::for_each(game.playerList.begin(),game.playerList.end(),[&](Player& player){
+                    if(!player.isDie() && player.voteCount>0){
+                        for(int i=0;i<player.voteCount;i++){
+                            game.putVote(player.getId(),-1);
+                        }
                     }
-                }
-            });
-            return voteEnd();
+                });
+                return voteEnd();
+            }
+            return out;
         }
         default:
         {
@@ -422,57 +444,64 @@ Json::Value Controller::roundStartData(){
 }
 //Header 22
 Json::Value Controller::voteEnd(){
+    game.voteFinishedByVote=true;
     //결과 송출
     std::map<int,int> storage = game.voteInfo();
     Json::Value toAll;
     Json::Value out;
+    toAll["Header"]=22;
     toAll[Content]["voteDatas"]=voteResult(storage);
     out["toAll"].append(toAll);
-    Json::Value toAll1;
     int deadId=game.calculateVoteDead(storage);
     game.findPlayer(deadId).dead();
-    toAll1[Header]=23;
-    toAll1[Content]["id"]= deadId;
-    toAll1[Content]["role"]=game.findPlayer(deadId).getRole();
-    out["toAll"].append(toAll1);
-    //voteEndingQueue 안에 있는것 빼서 처리해야 함.
-    while(!game.voteEndingQueue.empty()){
-        Json::Value data = game.voteEndingQueue.front();
-        Json::Value each;
-        if(storage[data["victim"].asInt()]==1 && game.findPlayer(data["id"].asInt()).roleflag.available){
-            each["recver"]=data["id"];
-            each["data"]["Header"]=40;
-            each["data"]["Content"]["roleFlag"]=data["roleFlag"];
-            each["data"]["Content"]["victim"]=data["victim"];
-            each["data"]["Content"]["intValue"]=game.findPlayer(data["victim"].asInt()).roleflag.role;
-            out["toEach"].append(each);
-        }
-        game.voteEndingQueue.pop();
-    }
     //===========================================
     //게임 종료 및 생존자 송출
     if(game.findPlayer(deadId).roleflag.role==41 && game.findPlayer(deadId).roleflag.available){
         out["toAll"].append(gameEnd(Mid)["toAll"]);
         out["toAll"].append(gameEnd(Mid)["toAll1"]);
-    }
-    Json::Value toAll2;
-    toAll2["Header"]=13;
-    toAll2["Content"]=survivors();
-    out["toAll"].append(toAll2);
-    if(game.isGameEnd()){
+    }else if(game.isGameEnd()){
         switch(game.isGameEnd()){
             case 1:
             {
                 out["toAll"].append(gameEnd(PoolC)["toAll"]);
                 out["toAll"].append(gameEnd(PoolC)["toAll1"]);
+                break;
             }
             case 2:
             {
                 out["toAll"].append(gameEnd(Morgo)["toAll"]);
                 out["toAll"].append(gameEnd(Morgo)["toAll1"]);
+                break;
             }
+            default:
+            break;
         }
+    }else{
+        Json::Value toAll1;
+        toAll1[Header]=23;
+        toAll1[Content]["id"]= deadId;
+        toAll1[Content]["role"]=game.findPlayer(deadId).getRole();
+        out["toAll"].append(toAll1);
+        //voteEndingQueue 안에 있는것 빼서 처리해야 함.
+        while(!game.voteEndingQueue.empty()){
+            Json::Value data = game.voteEndingQueue.front();
+            Json::Value each;
+            if(storage[data["victim"].asInt()]==1 && game.findPlayer(data["id"].asInt()).roleflag.available){
+                each["recver"]=data["id"];
+                each["data"]["Header"]=40;
+                each["data"]["Content"]["roleFlag"]=data["roleFlag"];
+                each["data"]["Content"]["victim"]=data["victim"];
+                each["data"]["Content"]["intValue"]=game.findPlayer(data["victim"].asInt()).roleflag.role;
+                out["toEach"].append(each);
+            }
+            game.voteEndingQueue.pop();
+        }
+        Json::Value toAll2;
+        toAll2["Header"]=13;
+        toAll2["Content"]=survivors();
+        out["toAll"].append(toAll2);
     }
+    
     return out;
 }
 
@@ -534,8 +563,9 @@ void Controller::startVote(){
                 player.voteCount=1;
             }
         }
-        game.clearVoteStorage();
     });
+    game.clearVoteStorage();
+    game.voteFinishedByVote=false;
 }
 
 Json::Value Controller::teamPlayers(Team team){

@@ -42,6 +42,7 @@ public:
     //투표 끝났는지 확인
     bool isVoteEnd();
     void startVote();
+    bool enterAllow=true;
 
     Json::Value useAbility(int roleFlag, Json::Value data);
     Json::Value survivors();

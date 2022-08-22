@@ -57,15 +57,22 @@ void GameService::processQueue(){
             }
             else if (data["Header"].asInt()==6){
                 if(mapConnectionRoom.find(tcpConnection)!=mapConnectionRoom.end()){
-                    int id=mapConnectionRoom[tcpConnection];
+                    int id=data["Content"]["id"].asInt();
                     int roomIndex=id/100-100;
                     int clientId=id%100;
                     tcpServices[roomIndex].alive[clientId]=false;
                     tcpServices[roomIndex].connectedNum--;
+                    Json::Value out;
+                    out["Header"]=6;
+                    out["Content"]["id"]=id;
+                    try{
+                        sendTcp(tcpServices[roomIndex].connectedClients[clientId],out.toStyledString());
+                    }
+                    catch(...){}
+                    tcpServices[roomIndex].connectedClients[clientId].closeSocket();
                     mapConnectionRoom.erase(tcpConnection);
-                    std::cout<<"\nplayer left by itself, erase info\n";
+                    std::cout<<"\nplayer left, erase info\n";
                     tcpServices[roomIndex].contollerLogic(data,id);
-                    tcpConnection.closeSocket();
                 }
                 else{
                     std::cout<<"\n already exited, but reqeust came to queue\n";
@@ -92,6 +99,8 @@ void GameService::processQueue(){
 
                 //header 2 entering the room
                 if(data["Header"].asInt()==2){
+                    if(data["Content"]["name"].asString()=="") throw std::runtime_error("blank name was inputed");
+                    if(mapConnectionRoom.find(tcpConnection)!=mapConnectionRoom.end()) continue;
                     int roomIndex=data["Content"]["roomId"].asInt()-100;
                     int roomId=roomIndex+100;
                     std::string name=data["Content"]["name"].asString();
@@ -123,6 +132,7 @@ void GameService::processQueue(){
         }
         catch(...){
             std::cout<<"\nsomething is wrong with request, disconnect...\n";
+            mapConnectionRoom.erase(tcpConnection);
             tcpConnection.closeSocket();
         }
 
@@ -174,9 +184,10 @@ void GameService::initialConnectionLogic(int clientNum, TcpConnection tcpConnect
         try{
             char inBuffer[1024]={0};
             tcpConnection.in(inBuffer,1024);
-            if(strlen(inBuffer)==0) throw std::runtime_error("disconnection error");
+            std::cout<<"!"<<inBuffer<<"!";
             std::string inp=std::string(inBuffer);
             jsons=toJson(inp);
+            std::cout<<"?";
             push(std::make_pair(tcpConnection,jsons));
         }
         catch(...){

@@ -16,7 +16,7 @@
  };
 
  void TcpService::toAll(std::string out){
-    char charOut[1024]={0};
+    char charOut[2048]={0};
     strcpy(charOut,out.c_str());
     for(int i=0;i<connectedClients.size();++i){
         if(!alive[i]) continue;
@@ -27,14 +27,14 @@
 
  void TcpService::toOne(int ind,std::string out){
     if(!alive[ind]) return;
-    char charOut[1024]={0};
+    char charOut[2048]={0};
     strcpy(charOut,out.c_str());
     TcpConnection currentConnection=connectedClients[ind];
     currentConnection.out(charOut);
  }
 
  void TcpService::toOthers(int ind,std::string out){
-    char charOut[1024]={0};
+    char charOut[2048]={0};
     strcpy(charOut,out.c_str());
     for(int i=0;i<connectedClients.size();++i){
         if(!alive[i]) continue;
@@ -45,7 +45,7 @@
  }
 //----------toEach 구현
  void TcpService::toEach(Json::Value out){
-    char charOut[1024]={0};
+    char charOut[2048]={0};
     int size=out.size();
         int index=out["recver"].asInt()-10000;
         toOne(index,out["data"].toStyledString()+"$");
@@ -88,7 +88,7 @@ void TcpService::sendWithTimeInternal(Json::Value jsonValue,int id,int second){
 void TcpService::sendPosition(int sock){
     //---------------------------------------
     while(1){
-        usleep(1000000);
+        usleep(30000);
 
         char charOut[1024]={0};
         std::string stringOut=controller.positions().toStyledString();

@@ -377,9 +377,10 @@ Json::Value Game::MVP(){
             }
             case 5://수다왕
             {
+                int id = talkingTOP();
                 mvp["type"]=5;
-                mvp["id"];
-                mvp["score"];
+                mvp["id"]=id;
+                mvp["score"]=0;
                 MVPS["MVP"].append(mvp);
                 break;
             }

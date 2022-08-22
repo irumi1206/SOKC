@@ -22,6 +22,7 @@ void TcpConnection::in(char* buffer,int len){
 }
 
 void TcpConnection::out(char* message){
+
     send(tcpSocket,message,strlen(message),0);
     //std::char_traits<char8_t>::length(message)
 }

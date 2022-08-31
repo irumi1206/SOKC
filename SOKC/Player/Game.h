@@ -16,6 +16,7 @@ public:
     GameSetting gameSetting;
     int id;//방 id
     std::vector<Player> playerList;//방에 참여해 있는 플레이어들을 담는 구조체
+    std::vector<Player> readyRoom;//대기 방에 있는 플레이어들을 담는 구조체
     //std::vector<Player *> inGameList;
     int hostId;
     //투표 추가
@@ -29,6 +30,8 @@ public:
     //투표종료 queue
     std::queue<Json::Value> voteEndingQueue;//저격수, 변덕쟁이용
     std::queue<Json::Value> voteStartQueue;//군기반장용
+    std::map<int,int> codingTestStorage;
+    bool testFinishedByTest;
 
 public:
     //게임 시작 함수

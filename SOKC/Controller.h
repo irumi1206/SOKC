@@ -42,9 +42,12 @@ public:
     //투표 끝났는지 확인
     bool isVoteEnd();
     void startVote();
+    bool isTestEnd();
     bool enterAllow=true;
+    Json::Value testEnd();
+     
 
-    Json::Value useAbility(int roleFlag, Json::Value data);
+    Json::Value useAbility(int roleIndex, Json::Value data);
     Json::Value survivors();
 };
 

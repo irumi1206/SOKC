@@ -18,7 +18,7 @@ void TcpConnection::setTcpSocket(int socketDescriptor){
 
 void TcpConnection::in(char* buffer,int len){
     int valread=read(tcpSocket,buffer,len);
-    if(valread==0) throw std::runtime_error("disconnected from client");
+    //if(valread==0) throw std::runtime_error("disconnected from client");
 }
 
 void TcpConnection::out(char* message){

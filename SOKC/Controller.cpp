@@ -39,6 +39,10 @@ Json::Value Controller::control(Json::Value data, int clientId){
             toOne["Content"]["id"]=id;
             out["toOne"].append(toOne);
 
+            //추가함
+            if(game.hostId==-1) game.hostId=id;
+            //
+
             //플레이어 입장 시 호스트가 누구인지 알려줌.
             Json::Value toOne1;
             toOne1["Header"]=8;
@@ -89,6 +93,12 @@ Json::Value Controller::control(Json::Value data, int clientId){
                 toAll1["Header"]=8;
                 toAll1["Content"]["id"]=game.getHost();
                 out["toAll"].append(toAll1);
+            }
+            if(game.playerList.size()==0){
+                ///추가함
+                game.hostId=-1;
+                ///
+                enterAllow=true;
             }
             toAll[Content]["id"]=id;
             out["toAll"].append(toAll);
@@ -168,6 +178,26 @@ Json::Value Controller::control(Json::Value data, int clientId){
             out["toOne"].append(toOne);
             return out;
         }
+        // //방 나가기
+        case 14:
+        {
+            toAll[Header]=14;
+            int id=data[Content]["id"].asInt();
+            
+            game.deletePlayer(id);
+            positionVector.erase(id);
+            //호스트 나가면 호스트 배정
+            if(game.hostId==id && game.playerList.size()){
+                game.hostId=game.playerList[0].getId();
+                Json::Value toAll1;
+                toAll1["Header"]=8;
+                toAll1["Content"]["id"]=game.getHost();
+                out["toAll"].append(toAll1);
+            }
+            toAll[Content]["id"]=id;
+            out["toAll"].append(toAll);
+            return out;
+        }
         //게임 시작
         case 15:
         {
@@ -178,11 +208,27 @@ Json::Value Controller::control(Json::Value data, int clientId){
                 Json::Value each;
                 each["recver"]=player.getId();
                 each["data"][Header]=15;
-                each["data"][Content]["roleFlag"]=player.getRole();
+                each["data"][Content]["roleIndex"]=player.getRole();
+                //자신의 팀원 알려주기
+                if(player.roleflag.getTeam()==PoolC){
+                    std::for_each(game.playerList.begin(),game.playerList.end(),[&](Player player1){
+                        if(player1.getId()!=player.getId()){
+                            each["data"][Content]["teams"].append(player1.getId());
+                        }
+                    });
+                }else if(player.roleflag.getTeam()==Morgo){
+                    each["data"][Content]["teams"];
+                    std::for_each(game.playerList.begin(),game.playerList.end(),[&](Player player1){
+                        if(player1.getTeam()==Morgo && player1.getId()!=player.getId()){
+                            each["data"][Content]["teams"].append(player1.getId());
+                        }
+                    });
+                };
+                //=====================
                 out["toEach"].append(each);
                 if(player.getRole()==6){
                     toAll["Header"]=40;
-                    toAll["Content"]["roleFlag"]=6;
+                    toAll["Content"]["roleIndex"]=6;
                     toAll["Content"]["id"]=player.getId();
                     out["toAll"].append(toAll);
                 }
@@ -198,15 +244,16 @@ Json::Value Controller::control(Json::Value data, int clientId){
         {
             while(!game.voteStartQueue.empty()){
                 Json::Value voteStart = game.voteStartQueue.front();
-                if(voteStart["roleFlag"]==22){
+                if(voteStart["roleIndex"]==22){
                     Json::Value each;
                     each["recver"]=voteStart["victim"];
                     each["data"]["Header"]=40;
-                    each["data"]["Content"]["roleFlag"]=22;
+                    each["data"]["Content"]["roleIndex"]=22;
                     out["toEach"].append(each);
                 }
                 game.voteStartQueue.pop();
             }
+            game.voteFinishedByVote=false;
             
             startVote();
             
@@ -223,8 +270,9 @@ Json::Value Controller::control(Json::Value data, int clientId){
 
             //타이머
             Json::Value timer;
-            timer["time"]=game.gameSetting.discussionTime+game.gameSetting.votingTime;
+            timer["time"]=game.gameSetting.discussionTime+game.gameSetting.votingTime+5;
             timer["data"]["Header"]=-100;
+            timer["data"]["info"]="vote";
             out["timer"]=timer;
             return out;
         }
@@ -236,13 +284,13 @@ Json::Value Controller::control(Json::Value data, int clientId){
             if(game.putVote(votingPlayerId,votedPlayerId)){
                 if(game.findPlayer(votingPlayerId).roleflag.role==23){
                     Json::Value votingEnd;
-                    votingEnd["roleFlag"]=23;
+                    votingEnd["roleIndex"]=23;
                     votingEnd["id"]=votingPlayerId;
                     votingEnd["victim"]=votedPlayerId;
                     game.voteEndingQueueAdd(votingEnd);
                 }else if(game.findPlayer(votingPlayerId).roleflag.role==4){
                     Json::Value votingEnd;
-                    votingEnd["roleFlag"]=4;
+                    votingEnd["roleIndex"]=4;
                     votingEnd["id"]=votingPlayerId;
                     votingEnd["victim"]=votedPlayerId;
                     game.voteEndingQueueAdd(votingEnd);
@@ -280,7 +328,26 @@ Json::Value Controller::control(Json::Value data, int clientId){
             int victim=data[Content]["victim"].asInt();
             Player& victimPlayer=game.findPlayer(victim);
             Player& killerPlayer=game.findPlayer(id);
+            //보안관일 경우
             if(killerPlayer.roleflag.available){
+                if(killerPlayer.roleflag.role==1){
+                    toOne["Header"]=40;
+                    if(victimPlayer.getTeam()==PoolC){
+                        if(game.findPlayer(id).benefit<=0){
+                            game.findPlayer(id).dead();
+                            Json::Value toAll1;
+                            toAll1["Header"]=33;
+                            toAll1["Content"]["id"]=id;
+                            out["toAll"].append(toAll1);
+
+                        }else{
+                            game.findPlayer(id).benefit-=1;
+                        }
+                        toOne["Content"]["intValue"]=-1;
+                    }else{
+                        toOne["Content"]["intValue"]=1;
+                    }
+                }
                 if(victimPlayer.getTeam()==killerPlayer.getTeam()){
                     killerPlayer.addKillScore(-1);
                 }else{
@@ -301,7 +368,7 @@ Json::Value Controller::control(Json::Value data, int clientId){
                     //부활 토큰 쏨.
                     Json::Value toAll2;
                     toAll2["Header"]=40;
-                    toAll2["Content"]["roleFlag"]=2;
+                    toAll2["Content"]["roleIndex"]=2;
                     toAll2["Content"]["id"]=victim;
                     out["toAll"].append(toAll2);
                 //능력 사용이 가능한 군인이 아닐 경우
@@ -344,7 +411,7 @@ Json::Value Controller::control(Json::Value data, int clientId){
                 Json::Value each;
                 each["recver"]=game.gameSetting.hackerId;
                 each["data"]["Header"]=40;
-                each["data"]["Content"]["roleFlag"]=24;
+                each["data"]["Content"]["roleIndex"]=24;
                 each["data"]["Content"]["id"]=id;
                 out["toEach"].append(each);
             }else{
@@ -372,25 +439,15 @@ Json::Value Controller::control(Json::Value data, int clientId){
         //능력 사용
         case 40:
         {
-            Json::Value temp=useAbility(data[Content]["roleFlag"].asInt(),data);
-            if(game.isGameEnd()){
-                switch(game.isGameEnd()){
-                    case 1:
-                    {
-                        temp["toAll"].append(gameEnd(PoolC)["toAll"]);
-                        temp["toAll"].append(gameEnd(PoolC)["toAll1"]);
-                        break;
-                    }
-                    case 2:
-                    {
-                        temp["toAll"].append(gameEnd(Morgo)["toAll"]);
-                        temp["toAll"].append(gameEnd(Morgo)["toAll1"]);
-                        break;
-                    }
-                    default:
-                    break;
+            if(data["Content"]["roleIndex"]==21 && game.findPlayer(data[Content]["id"].asInt()).roleflag.role!=21){
+                game.codingTestStorage[data[Content]["id"].asInt()]=data["Content"]["intValue"].asInt();
+                std::cout<<survivors().size()<<std::endl;
+                if(isTestEnd()){
+                    out=testEnd();
                 }
+                return out;
             }
+            Json::Value temp=useAbility(data[Content]["roleIndex"].asInt(),data);
             return temp;
         }
         //플레이어 음소거
@@ -399,10 +456,23 @@ Json::Value Controller::control(Json::Value data, int clientId){
             out["toAll"].append(data);
             return out;
         }
+        //다음 게임 하기
+        case 102:
+        {
+            int id = data[Content]["id"].asInt();
+            if(game.readyRoom.size()==0){
+                game.hostId=id;
+                toAll["Header"]=8;
+                toAll["Content"]["id"]=id;
+                out["toAll"].append(toAll);
+            }
+            game.readyRoom.push_back(game.findPlayer(id));
+            return out;
+        }
         //타이머 종료 신호
         case -100:
         {
-            if(game.voteFinishedByVote==false){
+            if(game.voteFinishedByVote==false && data["info"]=="vote"){
                 std::for_each(game.playerList.begin(),game.playerList.end(),[&](Player& player){
                     if(!player.isDie() && player.voteCount>0){
                         for(int i=0;i<player.voteCount;i++){
@@ -411,6 +481,12 @@ Json::Value Controller::control(Json::Value data, int clientId){
                     }
                 });
                 return voteEnd();
+            }else if(game.testFinishedByTest==false &&data["info"]=="test"){
+                toAll["Header"]=40;
+                toAll["Content"]["id"]=-3;
+                toAll["Content"]["roleIndex"]=21;
+                toAll["Content"]["boolValue"]=true;
+                out["toAll"].append(toAll);
             }
             return out;
         }
@@ -477,11 +553,13 @@ Json::Value Controller::voteEnd(){
             break;
         }
     }else{
-        Json::Value toAll1;
-        toAll1[Header]=23;
-        toAll1[Content]["id"]= deadId;
-        toAll1[Content]["role"]=game.findPlayer(deadId).getRole();
-        out["toAll"].append(toAll1);
+        if(deadId!=-1){
+            Json::Value toAll1;
+            toAll1[Header]=23;
+            toAll1[Content]["id"]= deadId;
+            toAll1[Content]["role"]=game.findPlayer(deadId).getRole();
+            out["toAll"].append(toAll1);
+        }
         //voteEndingQueue 안에 있는것 빼서 처리해야 함.
         while(!game.voteEndingQueue.empty()){
             Json::Value data = game.voteEndingQueue.front();
@@ -489,7 +567,7 @@ Json::Value Controller::voteEnd(){
             if(storage[data["victim"].asInt()]==1 && game.findPlayer(data["id"].asInt()).roleflag.available){
                 each["recver"]=data["id"];
                 each["data"]["Header"]=40;
-                each["data"]["Content"]["roleFlag"]=data["roleFlag"];
+                each["data"]["Content"]["roleIndex"]=data["roleIndex"];
                 each["data"]["Content"]["victim"]=data["victim"];
                 each["data"]["Content"]["intValue"]=game.findPlayer(data["victim"].asInt()).roleflag.role;
                 out["toEach"].append(each);
@@ -521,7 +599,7 @@ Json::Value Controller::positions(){
 
 //Header 100 게임 종료 조건 달성 여부 확인 및 종료 진행
 Json::Value Controller::gameEnd(Team team){
-
+    enterAllow=true;
     Json::Value data;
     Json::Value toAll;
     Json::Value toAll1;
@@ -552,6 +630,61 @@ bool Controller::isVoteEnd(){
         }
     });
     return check;
+}
+
+bool Controller::isTestEnd(){
+    bool check=true;
+    std::for_each(game.playerList.begin(),game.playerList.end(),[&](Player player){
+        if(!player.isDie() && !game.codingTestStorage.contains(player.getId())&&player.roleflag.team!=Morgo){
+            check=false;
+        }
+    });
+    return check;
+}
+
+Json::Value Controller::testEnd(){
+    game.testFinishedByTest=true;
+    int id=-1;
+    int count=1000;
+    std::for_each(game.playerList.begin(),game.playerList.end(),[&](Player player){
+        if(player.roleflag.team!=Morgo && !game.codingTestStorage.contains(player.getId())){
+            game.codingTestStorage[player.getId()]=0;
+        }
+    });
+    for(auto current=game.codingTestStorage.begin();current!=game.codingTestStorage.end();current++){
+        if(current->second==count){
+            int temp = rand()%2;
+            if(temp==0)id=current->first;
+        }else if(current->second<count){
+            id=current->first;
+            count=current->second;
+        }
+    };
+    game.findPlayer(id).dead();
+    Json::Value out;
+    Json::Value toAll;
+    toAll["Header"]=33;
+    toAll[Content]["id"]=id;
+    out["toAll"].append(toAll);
+    if(game.isGameEnd()){
+        switch(game.isGameEnd()){
+            case 1:
+            {
+                out["toAll"].append(gameEnd(PoolC)["toAll"]);
+                out["toAll"].append(gameEnd(PoolC)["toAll1"]);
+                break;
+            }
+            case 2:
+            {
+                out["toAll"].append(gameEnd(Morgo)["toAll"]);
+                out["toAll"].append(gameEnd(Morgo)["toAll1"]);
+                break;
+            }
+            default:
+            break;
+        }
+    }
+    return out;
 }
 
 void Controller::startVote(){
@@ -637,38 +770,12 @@ Json::Value Controller::survivors(){
     return survivors;
 }
 
-Json::Value Controller::useAbility(int roleFlag, Json::Value data){
+Json::Value Controller::useAbility(int roleIndex, Json::Value data){
     Json::Value out;
     if(game.findPlayer(data["Content"]["id"].asInt()).roleflag.available){
-        switch(roleFlag){
+        switch(roleIndex){
             case 1://보안관
-            {
-                Json::Value toOne;
-                Json::Value toAll;
-                int id = data["Content"]["id"].asInt();
-                Player& sheriff = game.findPlayer(id);
-                Player& victim = game.findPlayer(data["Content"]["victim"].asInt());
-                victim.dead();
-                toAll["Header"]=32;
-                toAll["Content"]["id"]=id;
-                toAll["Content"]["victim"]=data["Content"]["victim"].asInt();
-                toOne["Header"]=40;
-                if(victim.getTeam()==PoolC){
-                    sheriff.addKillScore(-1);
-                    if(sheriff.benefit<=0){
-                        sheriff.dead();
-                    }else{
-                        sheriff.benefit-=1;
-                    }
-                    toOne["Content"]["intValue"]=-1;
-                }else{
-                    sheriff.addKillScore(1);
-                    toOne["Content"]["intValue"]=1;
-                }
-                out["toOne"].append(toOne);
-                out["toAll"].append(toAll);
-                return out;
-            }
+            {}
             case 2://군인, 없음.
             {}
             case 3://탐정
@@ -688,7 +795,7 @@ Json::Value Controller::useAbility(int roleFlag, Json::Value data){
                         }
                     });
                     toOne["Header"]=40;
-                    toOne["Content"]["roleFlag"]=3;
+                    toOne["Content"]["roleIndex"]=3;
                     toOne["Content"]["intValue"]=aliveCount;
                     out["toOne"].append(toOne);
                 }
@@ -701,6 +808,7 @@ Json::Value Controller::useAbility(int roleFlag, Json::Value data){
                     game.findPlayer(id).voteCount+=1;
                     game.findPlayer(id).benefit-=1;
                 }
+                return out;
             }
             case 5://정치인, 투표 관련 직업
             {
@@ -709,6 +817,7 @@ Json::Value Controller::useAbility(int roleFlag, Json::Value data){
                     game.findPlayer(id).voteCount+=1;
                     game.findPlayer(id).benefit-=1;
                 }
+                return out;
             }
             case 6://하리주니어
             {
@@ -728,7 +837,7 @@ Json::Value Controller::useAbility(int roleFlag, Json::Value data){
                     Json::Value each;
                     each["recver"]=victim;
                     each["data"]["Header"]=40;
-                    each["data"]["Content"]["roleFlag"]=7;
+                    each["data"]["Content"]["roleIndex"]=7;
                     each["data"]["Content"]["id"]=id;
                     each["data"]["Content"]["victim"]=victim;
                     out["toEach"].append(each);
@@ -738,13 +847,21 @@ Json::Value Controller::useAbility(int roleFlag, Json::Value data){
             case 21://면접관
             {
                 int id = data["Content"]["id"].asInt();
-                if(game.findPlayer(id).roleflag.abilityCount){
+                if(game.findPlayer(id).roleflag.abilityCount && game.findPlayer(id).roleflag.role==21){
+                    game.testFinishedByTest=false;
                     game.findPlayer(id).roleflag.abilityCount-=1;
+                    game.codingTestStorage.clear();
                     Json::Value toAll;
                     toAll["Header"]=40;
-                    toAll["Content"]["roleFlag"]=21;
-                    toAll["Content"]["intValue"]=3;//코테는 클라이언트에서 할당
+                    toAll["Content"]["roleIndex"]=21;
+                    toAll["Content"]["id"]=-3;
                     out["toAll"].append(toAll);
+                    //타이머
+                    Json::Value timer;
+                    timer["time"]=60;
+                    timer["data"]["Header"]=-100;
+                    timer["data"]["info"]="test";
+                    out["timer"]=timer;
                 }
                 return out;
             }
@@ -755,9 +872,10 @@ Json::Value Controller::useAbility(int roleFlag, Json::Value data){
                     game.findPlayer(id).roleflag.abilityCount-=1;
                     Json::Value voteStart;
                     voteStart["victim"]=data["Content"]["victim"].asInt();
-                    voteStart["roleFlag"]=22;
+                    voteStart["roleIndex"]=22;
                     game.voteStartQueue.push(voteStart);
                 }
+                return out;
             }
             case 23:{}//저격수, 자동발동
             case 24://해커
@@ -768,6 +886,7 @@ Json::Value Controller::useAbility(int roleFlag, Json::Value data){
                     game.gameSetting.hackedMission=data["Content"]["intValue"].asInt();
                     game.gameSetting.hackerId=data["Content"]["id"].asInt();
                 }
+                return out;
             }
             case 41://도도새, 없음
             {}

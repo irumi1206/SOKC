@@ -58,7 +58,7 @@ void TcpService::sendWithTimeInternal(Json::Value jsonValue,int id,int second){
 
  void TcpService::contollerLogic(Json::Value jsonRequest,int id){
     Json::Value jsonResponse=controller.control(jsonRequest,id);
-    std::cout<<jsonResponse.toStyledString()<<std::endl;
+    std::cout<<"output\n"<<jsonResponse.toStyledString()<<std::endl;
     Json::Value One=jsonResponse["toOne"];
     Json::Value All=jsonResponse["toAll"];
     Json::Value Oth=jsonResponse["other"];
@@ -87,7 +87,9 @@ void TcpService::sendWithTimeInternal(Json::Value jsonValue,int id,int second){
 
 void TcpService::sendPosition(int sock){
     //---------------------------------------
+    int c=1;
     while(1){
+        c++;
         usleep(30000);
 
         char charOut[1024]={0};
@@ -97,11 +99,10 @@ void TcpService::sendPosition(int sock){
         for(int i=0;i<clientNum;++i){
             if(alive[i]){
                 struct sockaddr_in clientAddress=udpStorage[i];
-                //char* en=getenv("positionflag");
-                // if(strlen(en)!=0){
-                //     std::cout<<"ip address : "<<inet_ntoa(clientAddress.sin_addr)<<" port : "<<ntohs(clientAddress.sin_port)<<"\n";
-                //     std::cout<<"/n"<<stringOut<<"/n";
-                // }
+                if(c%30==0){
+                    std::cout<<"ip address : "<<inet_ntoa(clientAddress.sin_addr)<<" port : "<<ntohs(clientAddress.sin_port)<<"\n";
+                    std::cout<<"/n"<<stringOut<<"/n";
+                }
                 sendto(sock,charOut,strlen(charOut),MSG_CONFIRM,(const struct sockaddr *) &clientAddress, sizeof(clientAddress));
             }
         }

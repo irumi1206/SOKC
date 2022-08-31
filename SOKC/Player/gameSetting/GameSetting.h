@@ -10,7 +10,7 @@ public:
     std::map<int,bool> poolcAbility;
     std::map<int,bool> morgoAbility;
     std::map<int,bool> midAbility;
-    std::vector<int> missionVector={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
+    std::vector<int> missionVector={2,6,10,11,12,13,15};
     int poolcCount=4; //4~7
     int morgoCount=1; //1~4
     int midCount=0;   //0~1

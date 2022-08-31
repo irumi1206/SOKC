@@ -46,6 +46,12 @@ int Game::deletePlayer(int playerId){
             return 1;
         }
     }
+    for(int i=0;i<readyRoom.size();i++){
+        if(readyRoom[i].getId()==playerId){
+            readyRoom.erase(readyRoom.begin()+i);
+            return 1;
+        }
+    }
     return 0;
 }
 //플레이어 참가, 아이디는 tcp의 index로 지정해줌
@@ -58,10 +64,11 @@ int Game::joinPlayer(std::string name,int clientId){
     // });
     Player tempPlayer=Player(clientId,name);
     tempPlayer.setColor(emptyColor());
-    if(playerList.size()==0){
+    if(readyRoom.size()==0){
         hostId=clientId;
     }
     playerList.push_back(tempPlayer);
+    readyRoom.push_back(tempPlayer);
     return clientId;
 }
 //플레이어 참가, input을 player로 받을 경우(사용하지 않음)
@@ -87,22 +94,17 @@ std::vector<Player> Game::getPlayers(){
     return playerList;
 }
 void Game::assignMission(){
-    int playerCount=countPlayers();
-    std::vector<int> missions = gameSetting.missionVector;
     srand(time(NULL));
-    int i=0;
-    while(playerCount){
-        if(playerList[i].roleflag.role==7){
+    std::vector<int> missions = gameSetting.missionVector;
+    int size=missions.size();
+    std::for_each(playerList.begin(),playerList.end(),[&](Player& player){
+        if(player.roleflag.role==7){
             int temp=rand()%missions.size();
-            playerList[i].addMission(missions[temp]);
-            missions.erase(missions.begin()+temp);
+            player.addMission(missions[temp]);
         }
         int temp=rand()%missions.size();
-        playerList[i].addMission(missions[temp]);
-        missions.erase(missions.begin()+temp);
-        playerCount-=1;
-        i++;
-    }
+        player.addMission(missions[temp]);
+    });
 }
 void Game::assignRole(){
 
@@ -110,10 +112,19 @@ void Game::assignRole(){
     int morgoCount = getMorgoCount();
     int midCount = getMidCount();
     int poolcCount=playercount-morgoCount-midCount;
+    if(poolcCount<0){
+        poolcCount=0;
+    }
 
     std::vector<int> poolcAbility=gameSetting.getPoolc();
     std::vector<int> morgoAbility=gameSetting.getMorgo();
     std::vector<int> midAbility=gameSetting.getMid();
+    while(poolcCount>poolcAbility.size()){
+        poolcAbility.push_back(0);
+    }
+    while(morgoCount>morgoAbility.size()){
+        morgoAbility.push_back(20);
+    }
     
     srand(time(NULL));
     int i=0;
@@ -161,6 +172,7 @@ int Game::emptyColor(){
 
 void Game::gameStart(){
     assignRole();
+    readyRoom.clear();
     std::for_each(playerList.begin(),playerList.end(),[&](Player& player){
         playerLiveList.push_back(player.getId());
         player.live();
